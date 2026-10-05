@@ -14,3 +14,4 @@ jobs:
           node-version: 22
       - run: npm test
       - run: npm run validate
+      - run: for f in scripts/*.sh; do bash -n "$f" || exit 1; done
