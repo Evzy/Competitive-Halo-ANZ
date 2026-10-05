@@ -5,7 +5,7 @@
     "triggers": {
       "Evening": {
         "type": "Recurrence",
-        "recurrence": { "frequency": "Day", "interval": 1, "timeZone": "AUS Eastern Standard Time", "schedule": { "hours": [17], "minutes": [45] } }
+        "recurrence": { "frequency": "Day", "interval": 1, "startTime": "2026-10-06T00:00:00", "timeZone": "AUS Eastern Standard Time", "schedule": { "hours": [17], "minutes": [45] } }
       }
     },
     "actions": {
