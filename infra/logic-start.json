@@ -1,0 +1,36 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "contentVersion": "1.0.0.0",
+    "triggers": {
+      "Evening": {
+        "type": "Recurrence",
+        "recurrence": { "frequency": "Day", "interval": 1, "timeZone": "AUS Eastern Standard Time", "schedule": { "hours": [17], "minutes": [45] } }
+      }
+    },
+    "actions": {
+      "Build_the_server": {
+        "type": "Http",
+        "inputs": {
+          "method": "PUT",
+          "uri": "https://management.azure.com/subscriptions/66a971e1-0ad6-4f12-ad7b-859e4de82e73/resourceGroups/halo-competitive-anz-nightly/providers/Microsoft.Resources/deployments/nightly?api-version=2021-04-01",
+          "authentication": { "type": "ManagedServiceIdentity", "audience": "https://management.azure.com/" },
+          "body": {
+            "properties": {
+              "mode": "Incremental",
+              "templateLink": { "uri": "https://raw.githubusercontent.com/Evzy/Halo-Competitive-ANZ/main/infra/nightly.json" },
+              "parameters": {
+                "sshPublicKey": { "value": "<ssh public key>" },
+                "subnetId": { "value": "<subnet id>" },
+                "nsgId": { "value": "<nsg id>" },
+                "identityId": { "value": "<identity id>" },
+                "identityClientId": { "value": "<identity client id>" },
+                "storageAccount": { "value": "haloanzcontent" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

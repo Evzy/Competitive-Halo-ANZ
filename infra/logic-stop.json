@@ -1,0 +1,28 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "contentVersion": "1.0.0.0",
+    "triggers": {
+      "Midnight": {
+        "type": "Recurrence",
+        "recurrence": { "frequency": "Day", "interval": 1, "timeZone": "AUS Eastern Standard Time", "schedule": { "hours": [0], "minutes": [0] } }
+      }
+    },
+    "actions": {
+      "Delete_the_server": {
+        "type": "Http",
+        "inputs": {
+          "method": "PUT",
+          "uri": "https://management.azure.com/subscriptions/66a971e1-0ad6-4f12-ad7b-859e4de82e73/resourceGroups/halo-competitive-anz-nightly/providers/Microsoft.Resources/deployments/teardown?api-version=2021-04-01",
+          "authentication": { "type": "ManagedServiceIdentity", "audience": "https://management.azure.com/" },
+          "body": {
+            "properties": {
+              "mode": "Complete",
+              "templateLink": { "uri": "https://raw.githubusercontent.com/Evzy/Halo-Competitive-ANZ/main/infra/teardown.json" }
+            }
+          }
+        }
+      }
+    }
+  }
+}
