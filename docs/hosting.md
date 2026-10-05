@@ -25,6 +25,76 @@ Providers with Australian x86 VPSs and inbound UDP include Vultr, Linode
 (Akamai), DigitalOcean, AWS Lightsail and BinaryLane. Compare current prices
 yourself; they move.
 
+## Testing before paying for anything
+
+Two steps, each answering a different question.
+
+### 1. A home PC: does it work at all?
+
+Free, today, and it answers the biggest unknown: Project Reclaimer has not
+verified play between different networks. The host has the advantage this
+project exists to remove, which does not matter for a test.
+
+Windows runs the server natively, with no Wine, and this repo's `server`
+folder already has the layout Reclaimer expects, so it runs from a clone:
+
+```powershell
+git clone https://github.com/Evzy/Halo-Competitive-ANZ.git
+cd Halo-Competitive-ANZ
+.\scripts\copy-mcc-content.ps1
+
+# project-reclaimer.exe from https://projectreclaimer.dev/download, renamed
+.\project-reclaimer.exe dedicated init C:\reclaimer-init --from --maps "Construct,Guardian,Heretic,Narrows,The Pit,Foundry"
+Move-Item C:\reclaimer-init\game server\game
+Copy-Item .\project-reclaimer.exe server\
+
+cd server
+$env:RECLAIMER_DEDICATED_UPNP = "true"   # or forward the ports by hand
+.\project-reclaimer dedicated check
+.\project-reclaimer dedicated
+```
+
+Allow the ports through Windows Firewall, from a terminal opened as
+administrator:
+
+```powershell
+New-NetFirewallRule -DisplayName "Reclaimer games" -Direction Inbound -Protocol UDP -LocalPort 49176-49177 -Action Allow
+New-NetFirewallRule -DisplayName "Reclaimer browser" -Direction Inbound -Protocol TCP -LocalPort 49175 -Action Allow
+```
+
+**Check for CGNAT first.** Many Australian providers put customers behind a
+shared address, and then nothing outside can reach the server whatever the
+router says. Compare the WAN address on the router's status page with
+`Invoke-RestMethod https://ifconfig.me/ip`. Different, or a WAN address
+starting `100.64` to `100.127`, means CGNAT; Aussie Broadband removes it free
+on request, other providers vary.
+
+Then have somebody on a **different connection**, not in the same house, find
+**Halo Competitive ANZ | Melbourne 1** in the Server Browser and join. Worth
+writing down: did it appear in the browser, could they join, their ping, and
+whether anything rubber-banded with eight in.
+
+### 2. A Melbourne VPS on trial credit: is it fair?
+
+The real test: a datacentre server nobody hosts from, with a full lobby on a
+league night. Several providers give new accounts credit that covers a month
+or two of a 4 GB x86 VPS, which is enough. Each needs a card, and offers
+change, so check the current terms:
+
+| Provider | Melbourne | Sydney |
+|---|---|---|
+| Akamai (Linode) | Yes | Yes |
+| Microsoft Azure | Yes (Australia Southeast) | Yes (Australia East) |
+| AWS | Yes (opt-in region) | Yes |
+| DigitalOcean | No | Yes |
+
+Then follow [First-time setup](#first-time-setup) below.
+
+**Not worth trying:** Oracle Cloud's Always Free tier has Melbourne and
+Sydney, but its only free x86 machine has 1 GB of memory and an eighth of a
+core, under what one server needs; its large free machines are ARM, which
+cannot run the server. Google Cloud's free VM is US-only.
+
 **Railway cannot host this.** It accepts no inbound UDP, which the game port
 needs, and its nearest region is Singapore, about 80-100 ms from the east
 coast. Railway's own workaround for UDP is a playit.gg tunnel, which adds a
@@ -35,8 +105,8 @@ relay hop, the opposite of what a fair server is for.
 1. **On the VPS**, clone this repo and run the setup script:
 
    ```bash
-   git clone <this repo> Competitive-Halo-ANZ
-   cd Competitive-Halo-ANZ
+   git clone https://github.com/Evzy/Halo-Competitive-ANZ.git
+   cd Halo-Competitive-ANZ
    bash scripts/setup-vps.sh
    ```
 
@@ -69,9 +139,9 @@ relay hop, the opposite of what a fair server is for.
 4. **Upload the game files and the variants** to the VPS:
 
    ```powershell
-   scp -r C:\reclaimer-init\game\halo3 you@your-vps:Competitive-Halo-ANZ/server/game/
-   scp "server\content\Game Modes\h3_*.bin" "you@your-vps:'Competitive-Halo-ANZ/server/content/Game Modes/'"
-   scp server\content\Maps\mlg_*_012.mvar you@your-vps:Competitive-Halo-ANZ/server/content/Maps/
+   scp -r C:\reclaimer-init\game\halo3 you@your-vps:Halo-Competitive-ANZ/server/game/
+   scp "server\content\Game Modes\h3_*.bin" "you@your-vps:'Halo-Competitive-ANZ/server/content/Game Modes/'"
+   scp server\content\Maps\mlg_*_012.mvar you@your-vps:Halo-Competitive-ANZ/server/content/Maps/
    ```
 
    On the VPS, `ls server/game` should show `halo3`. None of these files go in
@@ -83,7 +153,7 @@ relay hop, the opposite of what a fair server is for.
 
    ```powershell
    .\scripts\sync-mods.ps1
-   scp -r server\content\Mods you@your-vps:Competitive-Halo-ANZ/server/content/
+   scp -r server\content\Mods you@your-vps:Halo-Competitive-ANZ/server/content/
    ```
 
 6. **Secrets**, in `.env` on the VPS: `RECLAIMER_DEDICATED_RCON_PASSWORD` if
@@ -139,6 +209,16 @@ a home connection joining this VPS.
 - **Remote console from your PC.** It is bound to the VPS's loopback on
   purpose; tunnel to it with `ssh -L 49176:127.0.0.1:49176 you@your-vps`, then
   point the RCON client at `127.0.0.1:49176`.
+
+## A second city
+
+A machine runs the servers its own `dedicated.toml` lists, so Sydney 1 and
+Sydney 2 are a second machine. Its `dedicated.toml` differs only in the two
+names, which must not collide with Melbourne's: the Server Browser lists both
+machines side by side. How that file is kept (a per-city copy in this repo,
+or a local edit) is decided when there is a second machine; until then this
+repo describes Melbourne. Melbourne and Sydney are roughly 10-15 ms apart, so
+one city serves both for a start.
 
 ## Stats
 

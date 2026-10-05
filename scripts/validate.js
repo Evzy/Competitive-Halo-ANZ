@@ -329,6 +329,7 @@ function findForbiddenFiles(dir, found = []) {
     const rel = path.relative(ROOT, full).replace(/\\/g, '/');
     // Present on a host, gitignored, and absent from a CI checkout.
     if (rel === 'server/game' || rel === 'server/content/Mods' || rel === 'server/data') continue;
+    if (/^server\/project-reclaimer[^/]*\.exe$/i.test(rel)) continue;
     if (entry.isDirectory()) findForbiddenFiles(full, found);
     else if (/\.(map|dll|exe)$/i.test(entry.name)) found.push(rel);
   }
@@ -417,7 +418,9 @@ function main() {
     if (!readme.includes(f)) errors.push(`README.md does not list playlists/${f}`);
   }
 
-  for (const f of findForbiddenFiles(ROOT)) {
+  const forbidden = new Set(findForbiddenFiles(ROOT));
+  for (const f of trackedFiles('.')) if (/\.(map|dll|exe)$/i.test(f)) forbidden.add(f);
+  for (const f of forbidden) {
     errors.push(`${f}: map, engine and program files are never committed`);
   }
 

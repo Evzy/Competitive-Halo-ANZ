@@ -36,15 +36,21 @@ share_rate = 20               # Mbit/s, all of one server's downloads together
 
 # Every server needs its own UDP port, and GAME_PORTS in .env must cover it.
 
-[[server]]
-name = "ANZ Starter Rotation"
-port = 49176
-playlist = "playlists/starter.playlist.json"
+# Named for where the machine is, numbered per lobby. Both lobbies play
+# Hardcore so two 4v4s can run at once. A machine in another city runs this
+# file with its own two names; see "A second city" in docs/hosting.md.
+# Both need scripts/copy-mcc-content.ps1 run on the host.
 
 [[server]]
-name = "ANZ Hardcore"
-port = 49177
+name = "Halo Competitive ANZ | Melbourne 1"
+port = 49176
 playlist = "playlists/hardcore.playlist.json"
 max_players = 8
 team_changing = "off"         # MLG v8: Team Changing = Not Allowed
-# Needs scripts/copy-mcc-content.ps1 run on the host; see docs/hosting.md.
+
+[[server]]
+name = "Halo Competitive ANZ | Melbourne 2"
+port = 49177
+playlist = "playlists/hardcore.playlist.json"
+max_players = 8
+team_changing = "off"

@@ -10,6 +10,9 @@ server/content/Mods/*
 server/content/Game Modes/h3_*.bin
 server/content/Maps/mlg_*_012.mvar
 
+# The server program, when the server runs from a clone on Windows.
+server/project-reclaimer*.exe
+
 # Written by the running servers.
 server/data/
 server/bans.json

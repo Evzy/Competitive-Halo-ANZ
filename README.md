@@ -26,8 +26,7 @@ do not open MCC itself.
 
 | Playlist | File | Server | Status |
 |---|---|---|---|
-| Hardcore | `hardcore.playlist.json` | UDP 49177 | Ready. |
-| ANZ Starter Rotation | `starter.playlist.json` | UDP 49176 | Base game types, a fallback. |
+| Hardcore | `hardcore.playlist.json` | Melbourne 1 (UDP 49176), Melbourne 2 (UDP 49177) | Ready; no machine yet. |
 
 Files are in [`server/playlists/`](server/playlists/). Before each game,
 players vote between three games drawn from the playlist.
@@ -57,12 +56,6 @@ captures on Heretic and Onslaught and 3 on Narrows and The Pit.
 The files are Microsoft's and are not in this repo: whoever hosts copies them
 from their own MCC install with `scripts/copy-mcc-content.ps1`, from the list
 in [`server/content/mcc-content.json`](server/content/mcc-content.json).
-
-### ANZ Starter Rotation
-
-The same maps' default versions on Halo 3's base game types: Slayer to 50
-with Battle Rifle starts, and plain CTF, King of the Hill and Oddball. Not a
-recreation of Hardcore.
 
 ## Maps and mods
 
