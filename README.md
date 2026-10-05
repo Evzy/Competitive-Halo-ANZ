@@ -83,6 +83,11 @@ None yet. Suggest one by pull request; see [CONTRIBUTING.md](CONTRIBUTING.md).
 [docs/hosting.md](docs/hosting.md): an Australian VPS, Docker, and the game
 files copied from your own install.
 
+## License
+
+[MIT](LICENSE), for everything in this repo. Mods listed in `mods.json` are
+their authors' and are not covered by it.
+
 ## What is not here
 
 No game files, and nothing from Microsoft or Project Reclaimer. Every host
