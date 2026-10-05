@@ -83,6 +83,15 @@ test('playlist: a game type with a matching file resolves', () => {
   assert.deepStrictEqual(r.errors, []);
 });
 
+test('playlist: a missing content file is an error only for an enabled server', () => {
+  const games = [...three, game('Maps/Nope 8.mvar', 'Game Modes/Nope 8.bin')];
+  const on = checkPlaylist({ name: 'P', games }, opts());
+  assert.ok(on.errors.some(e => /Maps\/Nope 8\.mvar/.test(e)) && on.errors.some(e => /Game Modes\/Nope 8\.bin/.test(e)), on.errors.join('\n'));
+  const off = checkPlaylist({ name: 'P', games }, opts({ strict: false }));
+  assert.deepStrictEqual(off.errors, []);
+  assert.strictEqual(off.warnings.length, 2);
+});
+
 test('playlist: a mod map resolves through mods.json', () => {
   const games = [...three, game('MLG Warlock', 'Slayer')];
   assert.ok(checkPlaylist({ name: 'P', games }, opts()).errors.length);

@@ -199,7 +199,7 @@ function checkPlaylist(playlist, { file, strict, gameModes, modMaps, contentDir 
     if (lower(map).startsWith('workshop:')) {
       errors.push(`${at}: "${map}" - name mod maps by map name; a workshop: reference fails in Docker, which has no Steam`);
     } else if (/^maps\//i.test(map)) {
-      if (!fs.existsSync(path.join(contentDir, map))) errors.push(`${at}: ${map} is not in server/content`);
+      if (!fs.existsSync(path.join(contentDir, map))) unresolved.push(`${at}: ${map} is not in server/content`);
     } else if (!baseMaps.has(lower(map))) {
       if (modMaps.has(lower(map))) modMapsUsed.add(lower(map));
       else unresolved.push(`${at}: map "${map}" is neither a Halo 3 map nor in mods.json`);
@@ -207,7 +207,7 @@ function checkPlaylist(playlist, { file, strict, gameModes, modMaps, contentDir 
 
     const game = g.game;
     if (/^game modes\//i.test(game)) {
-      if (!fs.existsSync(path.join(contentDir, game))) errors.push(`${at}: ${game} is not in server/content`);
+      if (!fs.existsSync(path.join(contentDir, game))) unresolved.push(`${at}: ${game} is not in server/content`);
     } else if (!baseModes.has(lower(game)) && !gameModes.includes(lower(game))) {
       unresolved.push(`${at}: game type "${game}" has no file in server/content/Game Modes`);
     }

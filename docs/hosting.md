@@ -48,10 +48,11 @@ relay hop, the opposite of what a fair server is for.
    `project-reclaimer-<version>.exe` from
    <https://projectreclaimer.dev/download>, rename it `project-reclaimer.exe`,
    and copy the game files a server needs. `--maps` keeps it to the maps the
-   playlists use:
+   playlists use. Foundry is in the list because MLG Amplified and MLG
+   Onslaught are built on it:
 
    ```powershell
-   .\project-reclaimer.exe dedicated init C:\reclaimer-init --from --maps "Construct,Guardian,Heretic,Narrows,The Pit"
+   .\project-reclaimer.exe dedicated init C:\reclaimer-init --from --maps "Construct,Guardian,Heretic,Narrows,The Pit,Foundry"
    ```
 
 3. **Upload the game files** into the repo's `server/game` on the VPS:

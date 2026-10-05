@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "name": "ANZ MLG v8",
+  "vote_seconds": 20,
+  "games": [
+    { "map": "Maps/MLG Amplified 8.mvar", "game": "Game Modes/MLG TS 8.bin", "name": "Amplified Slayer" },
+    { "map": "Maps/MLG Cons TS 8.mvar", "game": "Game Modes/MLG CStruct TS8.bin", "name": "Construct Slayer" },
+    { "map": "Maps/MLG Heretic 8.mvar", "game": "Game Modes/MLG TS 8.bin", "name": "Heretic Slayer" },
+    { "map": "Maps/MLG Narrows 8.mvar", "game": "Game Modes/MLG TS 8.bin", "name": "Narrows Slayer" },
+    { "map": "Maps/MLG Pit 8.mvar", "game": "Game Modes/MLG TS 8.bin", "name": "The Pit Slayer" },
+    { "map": "Maps/MLG Guardian.mvar", "game": "Game Modes/MLG Ball 8.bin", "name": "Guardian Oddball" },
+    { "map": "Maps/MLG Cons King 8.mvar", "game": "Game Modes/MLG King 8.bin", "name": "Construct King" },
+    { "map": "Maps/MLG Heretic 8.mvar", "game": "Game Modes/MLG CTF 5Flag 8.bin", "name": "Heretic 5 Flag" },
+    { "map": "Maps/MLG Onslaught 8.mvar", "game": "Game Modes/MLG CTF 5Flag 8.bin", "name": "Onslaught 5 Flag" },
+    { "map": "Maps/MLG Narrows 8.mvar", "game": "Game Modes/MLG CTF Nar 8.bin", "name": "Narrows 3 Flag" },
+    { "map": "Maps/MLG Pit 8.mvar", "game": "Game Modes/MLG CTF Pit 8.bin", "name": "The Pit 3 Flag" }
+  ]
+}

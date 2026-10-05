@@ -11,17 +11,28 @@ They need Node 20 or newer and nothing else. GitHub runs the same two on every
 pull request. They check what can be checked without the game; a host's
 `dedicated check` is the final word.
 
-## A game type
+## An MLG v8 file
+
+The README's "MLG v8 files we still need" lists each one with the exact file
+name the playlist expects. They are MLG's original variants, so the file must
+be MLG's, not a remake:
+
+1. Put it in `server/content/Game Modes/` (game variants) or
+   `server/content/Maps/` (map variants), named exactly as the README lists.
+2. Check its settings against [docs/mlg-v8.md](docs/mlg-v8.md) before opening
+   the pull request, and say where the file came from.
+3. Tick its box in the README.
+
+## A game type of our own
 
 1. In the Project Reclaimer client, open **Host Game**, choose a map and the
    base game type, set the rules in **Game Options**, and choose **Save as
    variant**.
 2. Find the file in `Documents\My Games\Project Reclaimer\Game Modes`.
-3. Rename it to the game type's name, such as `HARDCORE TS.bin`. The validator
-   finds game types by file name, and it must match the name the playlist
-   uses.
+3. Rename it to the name the playlist uses. The validator finds game types by
+   file name.
 4. Put it in `server/content/Game Modes/` and say in the pull request what it
-   is based on (for a Hardcore type, which MCC Hardcore settings it matches).
+   is for.
 
 ## A Forge map
 

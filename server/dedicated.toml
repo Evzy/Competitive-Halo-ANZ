@@ -42,11 +42,11 @@ port = 49176
 playlist = "playlists/starter.playlist.json"
 
 [[server]]
-name = "ANZ Hardcore 8s"
+name = "ANZ MLG v8"
 port = 49177
-playlist = "playlists/hardcore-8s.playlist.json"
+playlist = "playlists/mlg-v8.playlist.json"
 max_players = 8
-team_changing = "off"
-# Off until the HARDCORE game type files are in content/Game Modes.
-# See "Gametypes we still need" in README.md.
+team_changing = "off"         # MLG v8: Team Changing = Not Allowed
+# Off until MLG's v8 game and map variants are in content/.
+# See "MLG v8 files we still need" in README.md.
 enabled = false
