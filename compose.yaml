@@ -1,0 +1,51 @@
+# Competitive Halo ANZ - Project Reclaimer dedicated servers on Linux.
+#
+# Adapted from Project Reclaimer's own compose.yaml
+# (https://projectreclaimer.dev/host.html#docker). The servers run under Wine
+# inside the published image; the image holds no game files.
+#
+#   docker compose up -d
+#   docker compose logs -f
+#   docker compose exec reclaimer dedicated status
+#
+# Settings live in .env (copy .env.example). Edits to server/dedicated.toml
+# need `docker compose restart`; edits to .env or this file need
+# `docker compose up -d`.
+
+name: reclaimer
+
+services:
+  reclaimer:
+    image: ${IMAGE:-ghcr.io/projectreclaimer/project-reclaimer-dedicated:latest}
+    restart: unless-stopped
+    stop_signal: SIGINT
+    stop_grace_period: 30s
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - ./server:/server
+      - ${GAME_DIR:-./server/game}:/server/game:ro
+      - cache:/cache
+    # A published port must equal the port inside.
+    ports:
+      - "${RECLAIMER_DEDICATED_MASTER_PORT:-49175}:${RECLAIMER_DEDICATED_MASTER_PORT:-49175}/tcp"
+      - "${GAME_PORTS:-49176-49177}:${GAME_PORTS:-49176-49177}/udp"
+      # Remote console, host loopback only. Reach it with
+      # ssh -L 49176:127.0.0.1:49176 you@server. Needs
+      # RECLAIMER_DEDICATED_RCON_ADDRESS=0.0.0.0 in .env so the container
+      # listens beyond its own loopback.
+      # - "127.0.0.1:${GAME_PORTS:-49176-49177}:${GAME_PORTS:-49176-49177}/tcp"
+    security_opt:
+      - no-new-privileges:true
+    # Roughly 0.25 core and 1-2 GB per server during a game.
+    # cpus: "2"
+    # mem_limit: 4g
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+
+volumes:
+  cache:

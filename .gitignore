@@ -1,0 +1,20 @@
+# Game files: copied from each host's own MCC install, never distributed.
+server/game/
+
+# Mod binaries: listed in mods.json, copied in by scripts/sync-mods.ps1.
+server/content/Mods/*
+!server/content/Mods/README.md
+
+# Written by the running servers.
+server/data/
+server/bans.json
+server/.reclaimer/
+
+# Secrets.
+.env
+
+# Never commit map or engine files, wherever they end up.
+*.map
+*.dll
+
+node_modules/

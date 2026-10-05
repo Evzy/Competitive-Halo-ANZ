@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "name": "ANZ Hardcore 8s",
+  "vote_seconds": 20,
+  "games": [
+    { "map": "Construct", "game": "HARDCORE TS" },
+    { "map": "Guardian", "game": "HARDCORE TS" },
+    { "map": "Heretic", "game": "HARDCORE TS" },
+    { "map": "Narrows", "game": "HARDCORE TS" },
+    { "map": "The Pit", "game": "HARDCORE TS" },
+    { "map": "Heretic", "game": "HARDCORE CTF" },
+    { "map": "Narrows", "game": "HARDCORE CTF" },
+    { "map": "The Pit", "game": "HARDCORE CTF" },
+    { "map": "Construct", "game": "HARDCORE KING" },
+    { "map": "Guardian", "game": "HARDCORE BALL" }
+  ]
+}
