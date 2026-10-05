@@ -4,6 +4,11 @@ How to run Halo Competitive ANZ's servers on an Australian VPS. Project
 Reclaimer's own guide is the reference for everything here:
 <https://projectreclaimer.dev/host.html>.
 
+The live servers do this on a VM that Azure builds every evening and deletes
+at midnight; [Azure, built nightly](#azure-built-nightly) covers that. The
+sections before it are how any one machine is set up, which is also what the
+nightly VM does automatically.
+
 ## Where to host
 
 The point of a dedicated server is that nobody has host advantage, so it
@@ -198,60 +203,161 @@ a home connection joining this VPS.
 
 ## Azure, built nightly
 
-The live servers do not run on a machine that stays around. At 5:45pm
-Melbourne time a schedule builds a fresh VM from `main`; at midnight another
-deletes it. Nothing on the VM survives the night except what it saves to
-storage, so **whatever is on `main` at 5:45pm is what goes live**.
+This is how the live servers run. There is no machine that stays around: at
+**5:45pm** Melbourne time Azure builds a brand-new VM from `main`, and at
+**midnight** it deletes it, disk and IP included. Nothing on the VM survives
+the night except what it saves to storage, so **whatever is on `main` at
+5:45pm is what goes live**, and outside those hours the only cost is storage
+(a few cents a month).
 
-Two resource groups in the `dev` subscription:
+### How a night runs
+
+1. **5:45pm.** The Logic App `melbourne-start` deploys `infra/nightly.json`
+   into the group `halo-competitive-anz-nightly`: a B2s VM, a 30 GB disk, a
+   NIC on the permanent network and firewall, and a new public IP.
+2. **cloud-init** (inside that template) installs Docker and git, clones `main`
+   and runs `scripts/nightly-boot.sh`, which:
+   - downloads `game.tar`, `mcc-content.tar` and `mods.tar` from the storage
+     account and unpacks them into `server/`;
+   - restores the ban list from `state/bans.json`;
+   - writes a fresh `.env`: auto-update on, a new random RCON password
+     (never stored anywhere), the lobby keeper on Melbourne 1 and 2;
+   - starts the stack with `docker compose up -d`;
+   - installs a cron job running `scripts/nightly-save.sh` every 5 minutes;
+   - uploads its own log to `state/boots/`, success or failure.
+
+   The servers are on the master list about five minutes after 5:45pm.
+   Players find them there, so the IP changing every night does not matter.
+3. **Every 5 minutes**, `nightly-save.sh` copies the ban list and the
+   servers' logs to storage.
+4. **Midnight.** `melbourne-stop` deploys `infra/teardown.json`, an empty
+   template, in Complete mode. Complete mode deletes everything in the group
+   that the template does not list, which is everything.
+
+The VM reads storage as the managed identity `halo-nightly-vm`, so no key or
+password is on the VM or in this repo. `scripts/blob.sh` holds the storage
+calls both scripts share.
+
+### Where everything lives
 
 | Group | Holds | Lifetime |
 |---|---|---|
-| `halo-competitive-anz` | VNet, `melbourne-nsg`, storage account `haloanzcontent`, identity `halo-nightly-vm`, Logic Apps `melbourne-start` and `melbourne-stop` | permanent |
+| `halo-competitive-anz` | `melbourneVNET` and `melbourne-nsg` (the firewall), storage account `haloanzcontent`, identity `halo-nightly-vm`, Logic Apps `melbourne-start` and `melbourne-stop` | permanent |
 | `halo-competitive-anz-nightly` | the VM, its disk, NIC and public IP | 5:45pm to midnight, empty otherwise |
 
-`melbourne-start` deploys `infra/nightly.json`; cloud-init clones `main` and
-runs `scripts/nightly-boot.sh`, which pulls the game, MCC content and mods
-from the `content` container, restores the ban list, writes a fresh `.env`
-with a new RCON password and starts the stack. It takes about five minutes.
-`melbourne-stop` deploys the empty `infra/teardown.json` in Complete mode,
-which deletes everything in the nightly group.
+Storage account `haloanzcontent`:
 
-The public IP is different every night. Players never need it: the servers
-announce themselves to the master list. To reach tonight's VM yourself (SSH is
-open only from the address in `melbourne-nsg`'s `ssh-from-home` rule):
+| Container / path | What | Written by |
+|---|---|---|
+| `content/game.tar`, `mcc-content.tar`, `mods.tar` | what the server needs that is not in git | `scripts/upload-content.ps1`, from your PC |
+| `state/bans.json` | the ban list, restored at the next boot | every 5 minutes |
+| `state/logs/<date>.tgz` | `server/data`, the servers' own logs | every 5 minutes |
+| `state/boots/<date-HHMM>.log` | the boot script's log | end of each boot |
+
+In the repo:
+
+| File | Role |
+|---|---|
+| `infra/nightly.json` | the VM template, including cloud-init |
+| `infra/teardown.json` | the empty template midnight deploys |
+| `infra/logic-start.json`, `infra/logic-stop.json` | the two schedules; ids and the SSH key are placeholders filled in by `azure-nightly.ps1 apply` |
+| `scripts/nightly-boot.sh`, `nightly-save.sh`, `blob.sh` | run on the VM |
+| `scripts/azure-nightly.ps1` | run from your PC: status, IP, build or tear down now, apply the schedules |
+| `scripts/upload-content.ps1` | run from your PC: replace one of the three tarballs |
+
+`npm run validate` (and CI) fails if `nightly.json` stops declaring a
+parameter `logic-start.json` passes it, and syntax-checks the shell scripts.
+
+### Day to day, from your PC
+
+| Task | Command |
+|---|---|
+| Is it up? Latest boot logs | `.\scripts\azure-nightly.ps1 status` |
+| Tonight's IP | `.\scripts\azure-nightly.ps1 ip` |
+| SSH in (open only from the address in `melbourne-nsg`'s `ssh-from-home` rule) | `ssh halo@<ip>`, then the commands in "Day to day" above |
+| Build now, outside 5:45pm (a failed build, a test) | `.\scripts\azure-nightly.ps1 build` |
+| Delete it now | `.\scripts\azure-nightly.ps1 teardown` |
+| Added a mod | `sync-mods.ps1`, then `.\scripts\upload-content.ps1 -Part mods` |
+| Changed the MCC variants | `copy-mcc-content.ps1`, then `.\scripts\upload-content.ps1 -Part mcc-content` |
+| MCC or Reclaimer needs new game files | `dedicated init` (First-time setup, step 2), then `.\scripts\upload-content.ps1 -Part game` |
+| Changed `infra/logic-*.json` | push to `main`, then `.\scripts\azure-nightly.ps1 apply` |
+
+A config change (playlists, `dedicated.toml`, `compose.yaml`, the boot script)
+needs nothing but a push to `main`: tonight's build clones it. A change to
+`infra/nightly.json` is the same, because the schedule fetches the template
+from `main` on GitHub. Content changes need the upload, because the tarballs
+are not in git. A build in progress or already running keeps what it started
+with; `teardown` then `build` picks up a change tonight.
+
+Things to know:
+
+- **A failed build sends no alert.** The evidence is `status` showing a boot
+  log that does not end in `up`, or no servers on the list. There is no
+  fallback machine: read the boot log, fix `main`, then `teardown` and
+  `build`.
+- **A ban made in the last five minutes before midnight can be lost.**
+- **RCON** is open inside Docker only, never to the internet, and its password
+  is in `.env` on tonight's VM.
+
+### Turning it off and on
+
+Off is disabling both Logic Apps (portal, or
+`az resource update -g halo-competitive-anz -n melbourne-start --resource-type Microsoft.Logic/workflows --set properties.state=Disabled`,
+and the same for `melbourne-stop`). Tear down first if a server is up.
+
+**On needs care: a schedule whose `startTime` has passed fires the moment it
+is enabled or re-applied.** Enabling `melbourne-stop` early is harmless (it
+empties an empty group). Enabling `melbourne-start` early builds a server that
+runs until midnight. So before turning them back on, move `startTime` in both
+`infra/logic-*.json` to a future date (keep start before 17:45 and stop at a
+midnight), push, run `apply`, then enable `melbourne-stop` before
+`melbourne-start`. `apply` refuses to re-apply a live schedule whose
+`startTime` has passed, for the same reason.
+
+### From nothing
+
+Everything permanent can be rebuilt with the Azure CLI. Subscription `dev`,
+region `australiasoutheast`.
 
 ```powershell
-az deployment group show -g halo-competitive-anz-nightly -n nightly --query properties.outputs.publicIp.value -o tsv
-ssh halo@<ip>
+$az = (Get-ChildItem "C:\Program Files*\Microsoft SDKs\Azure\CLI2\wbin\az.cmd" | Select -First 1).FullName
+$g = 'halo-competitive-anz'
+
+# Groups, network and firewall
+& $az group create -n $g -l australiasoutheast
+& $az group create -n halo-competitive-anz-nightly -l australiasoutheast
+& $az network vnet create -g $g -n melbourneVNET --address-prefixes 10.0.0.0/16 --subnet-name melbourneSubnet --subnet-prefixes 10.0.0.0/24
+& $az network nsg create -g $g -n melbourne-nsg
+& $az network nsg rule create -g $g --nsg-name melbourne-nsg -n ssh-from-home --priority 100 --protocol Tcp --destination-port-ranges 22 --source-address-prefixes <your home IP>
+& $az network nsg rule create -g $g --nsg-name melbourne-nsg -n reclaimer-games --priority 110 --protocol Udp --destination-port-ranges 49176-49178
+& $az network nsg rule create -g $g --nsg-name melbourne-nsg -n reclaimer-browser --priority 120 --protocol Tcp --destination-port-ranges 49175
+
+# Storage, and the identity the VM reads it as
+& $az storage account create -g $g -n haloanzcontent -l australiasoutheast --sku Standard_LRS --kind StorageV2 --access-tier Hot --allow-blob-public-access false --min-tls-version TLS1_2
+& $az identity create -g $g -n halo-nightly-vm -l australiasoutheast
+$sa = & $az storage account show -g $g -n haloanzcontent --query id -o tsv
+& $az role assignment create --assignee-object-id (& $az identity show -g $g -n halo-nightly-vm --query principalId -o tsv) --assignee-principal-type ServicePrincipal --role "Storage Blob Data Contributor" --scope $sa
+& $az role assignment create --assignee-object-id (& $az ad signed-in-user show --query id -o tsv) --assignee-principal-type User --role "Storage Blob Data Contributor" --scope $sa
+# Wait a minute for the role to take effect, then:
+& $az storage container create --account-name haloanzcontent -n content --auth-mode login
+& $az storage container create --account-name haloanzcontent -n state --auth-mode login
 ```
 
-What is kept, in the `state` container:
+Then upload the content (`upload-content.ps1` with `-Part game`,
+`-Part mcc-content` and `-Part mods`, after First-time setup steps 2 and 3
+and `sync-mods.ps1`), set future `startTime`s, and run
+`.\scripts\azure-nightly.ps1 apply`. That creates both schedules disabled and
+grants them exactly what they need: Contributor on the nightly group for both;
+for `melbourne-start` also Managed Identity Operator on `halo-nightly-vm` and
+Network Contributor on the network and firewall, so its VM can use them. Test
+with `build`, then `teardown`, then enable the schedules as above.
 
-| Path | What | When |
-|---|---|---|
-| `boots/<date-HHMM>.log` | the boot script's log, success or failure | end of each boot |
-| `logs/<date>.tgz` | `server/data`, the servers' own logs | every 5 minutes |
-| `bans.json` | the ban list, restored at the next boot | every 5 minutes |
-
-A ban made in the last five minutes before midnight can be lost. A failed
-build sends no alert; the evidence is the boot log, or no servers on the list.
-
-**Adding a mod** is `sync-mods.ps1` as before, then
-`.\scripts\upload-content.ps1 -Part mods`. The same script uploads
-`mcc-content` after `copy-mcc-content.ps1`, and `game` after an MCC update.
-Tonight's build uses whatever was uploaded last.
-
-**Turning it off** is disabling both Logic Apps. With the nightly group empty
-the only cost left is storage, a few cents a month. When turning them back
-on, a recurrence whose `startTime` has already passed fires the moment it is
-enabled, so move `startTime` in `infra/logic-*.json` to a future date and
-re-apply first. Enabling `melbourne-stop` early is harmless; enabling
-`melbourne-start` early builds a server that runs until midnight.
+The storage account name must be globally unique. If `haloanzcontent` is
+taken, the name is also in `scripts/azure-nightly.ps1`,
+`scripts/upload-content.ps1` and `infra/logic-start.json`.
 
 The old always-on VM `melbourne` and its static IP `20.211.218.55` were
-deleted on 6 October 2026, after the first test night. There is no fallback
-machine: if a build fails, fix `main` and fire `melbourne-start` by hand.
+deleted on 6 October 2026, after the first test night.
 
 ## When it breaks
 

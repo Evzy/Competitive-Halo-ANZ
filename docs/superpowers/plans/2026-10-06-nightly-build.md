@@ -1,5 +1,13 @@
 # Nightly Build Implementation Plan
 
+> **Done, 6 October 2026.** This is the record of how it was built, not the
+> instructions for running it: those are in `docs/hosting.md`, "Azure, built
+> nightly", and `scripts/azure-nightly.ps1`. Differences from the plan: the
+> old VM was deleted after one good test night rather than two; both
+> schedules got a future `startTime`, because one that has passed fires the
+> moment it is enabled; and `upload-content.ps1 -Part game` takes the
+> `dedicated init` folder (`-InitDir`), which is what the seed came from.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build the Melbourne server from nothing at 5:45pm and delete it at midnight, so a night off costs cents rather than about A$10 a month.

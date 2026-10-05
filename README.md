@@ -96,6 +96,12 @@ Subscribe to all three before joining Melbourne 2. Suggest a mod by pull request
 [docs/hosting.md](docs/hosting.md): an Australian VPS, Docker, and the game
 files copied from your own install.
 
+The live servers are up from 5:45pm to midnight Melbourne time, every night.
+They run on a VM in Azure's Melbourne region that is built fresh from `main`
+each evening and deleted at midnight, so a change merged to `main` is live
+that night. How it works:
+[docs/hosting.md, "Azure, built nightly"](docs/hosting.md#azure-built-nightly).
+
 ## License
 
 [MIT](LICENSE), for everything in this repo except what other people made:
