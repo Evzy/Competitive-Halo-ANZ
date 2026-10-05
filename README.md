@@ -26,10 +26,12 @@ do not open MCC itself.
 
 | Playlist | File | Server | Status |
 |---|---|---|---|
-| Hardcore | `hardcore.playlist.json` | Melbourne 1 (UDP 49176), Melbourne 2 (UDP 49177) | Ready; no machine yet. |
+| Hardcore | `hardcore.playlist.json` | Melbourne 1 (UDP 49176) | Test nights only. |
+| Hardcore + Mods | `hardcore-mods.playlist.json` | Melbourne 2 (Mods) (UDP 49177) | Test nights only. Hardcore plus Slayer and CTF on the mod maps below. |
+| Hardcore FFA | `ffa.playlist.json` | Melbourne 3 (FFA) (UDP 49178) | Test nights only. |
 
 Files are in [`server/playlists/`](server/playlists/). Before each game,
-players vote between three games drawn from the playlist.
+players vote between three games drawn from the playlist, for 60 seconds.
 
 ### Hardcore
 
@@ -53,6 +55,15 @@ Every game: Battle Rifle starts, 110% speed, 110% damage, 90% shield
 recharge, no motion tracker. Slayer to 50, Oddball and King to 250, flag to 5
 captures on Heretic and Onslaught and 3 on Narrows and The Pit.
 
+One change from MCC: players may change teams themselves, as in a custom game.
+Hardcore ships with that off, so each playlist game turns it on.
+
+### Hardcore FFA
+
+MCC's HARDCORE FFA game type (12 minutes) on MLG Heretic FFA and MLG Guard
+FFA, the free-for-all versions of those map variants MCC ships, and on MLG
+Amplified 8, which has no free-for-all version.
+
 The files are Microsoft's and are not in this repo: whoever hosts copies them
 from their own MCC install with `scripts/copy-mcc-content.ps1`, from the list
 in [`server/content/mcc-content.json`](server/content/mcc-content.json).
@@ -65,9 +76,14 @@ in [`server/content/mcc-content.json`](server/content/mcc-content.json).
 - **Mod maps** are listed in [`mods.json`](mods.json) by Steam Workshop ID,
   with their author and link. The mod files themselves are never committed:
   they are large and belong to their authors. Players download them through
-  Steam Workshop or from the server when they join.
+  Steam Workshop; the servers do not send them.
 
-No mods yet. Suggest one by pull request; see [CONTRIBUTING.md](CONTRIBUTING.md).
+| Mod | Author | Server |
+|---|---|---|
+| [Sanctuary](https://steamcommunity.com/sharedfiles/filedetails/?id=2898920291) | Neckzilla | Melbourne 2 (Mods) |
+
+Subscribe before joining Melbourne 2. Suggest a mod by pull request; see
+[CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Hosting
 

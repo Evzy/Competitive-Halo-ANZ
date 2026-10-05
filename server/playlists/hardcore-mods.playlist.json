@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "Hardcore",
+  "name": "Hardcore + Mods",
   "vote_seconds": 60,
   "games": [
     { "map": "Maps/mlg_narrows_v8_012.mvar", "game": "Game Modes/h3_4v4_hardcoreSlayer_50kills.bin", "name": "Narrows Slayer", "options": { "rounds.team_changing": "Enabled" } },
@@ -13,6 +13,8 @@
     { "map": "Maps/mlg_construct_v8_012.mvar", "game": "Game Modes/h3_4v4_hardcoreKing_250points.bin", "name": "Construct King", "options": { "rounds.team_changing": "Enabled" } },
     { "map": "Maps/mlg_guardian_v8_012.mvar", "game": "Game Modes/h3_4v4_hardcoreBall_250points.bin", "name": "Guardian Oddball", "options": { "rounds.team_changing": "Enabled" } },
     { "map": "Maps/mlg_amplified_v8_012.mvar", "game": "Game Modes/h3_4v4_hardcoreSlayer_50kills.bin", "name": "Amplified Slayer", "options": { "rounds.team_changing": "Enabled" } },
-    { "map": "Maps/mlg_onslaught_v8_012.mvar", "game": "Game Modes/h3_4v4_hardcoreFlag_heretic_5points.bin", "name": "Onslaught CTF", "options": { "rounds.team_changing": "Enabled" } }
+    { "map": "Maps/mlg_onslaught_v8_012.mvar", "game": "Game Modes/h3_4v4_hardcoreFlag_heretic_5points.bin", "name": "Onslaught CTF", "options": { "rounds.team_changing": "Enabled" } },
+    { "map": "Sanctuary", "game": "Game Modes/h3_4v4_hardcoreSlayer_50kills.bin", "name": "Sanctuary Slayer", "options": { "rounds.team_changing": "Enabled" } },
+    { "map": "Sanctuary", "game": "Game Modes/h3_4v4_hardcoreFlag_heretic_5points.bin", "name": "Sanctuary CTF", "options": { "rounds.team_changing": "Enabled" } }
   ]
 }

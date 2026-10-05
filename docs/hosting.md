@@ -17,7 +17,7 @@ What the box needs:
 |---|---|
 | Location | Sydney or Melbourne |
 | CPU | x86-64. **Not ARM**: the server is a Windows program run under Wine. |
-| Memory | About 1-2 GB per server during a game; 4 GB covers two servers. |
+| Memory | About 1-2 GB per server during a game; 4 GB covers two servers, and three busy at once can need 6. |
 | Disk | About 1.5 GB for one map, 5.5 GB for every multiplayer map. |
 | Network | A public IPv4 address, and **inbound UDP**. |
 
@@ -58,7 +58,7 @@ Allow the ports through Windows Firewall, from a terminal opened as
 administrator:
 
 ```powershell
-New-NetFirewallRule -DisplayName "Reclaimer games" -Direction Inbound -Protocol UDP -LocalPort 49176-49177 -Action Allow
+New-NetFirewallRule -DisplayName "Reclaimer games" -Direction Inbound -Protocol UDP -LocalPort 49176-49178 -Action Allow
 New-NetFirewallRule -DisplayName "Reclaimer browser" -Direction Inbound -Protocol TCP -LocalPort 49175 -Action Allow
 ```
 
@@ -110,7 +110,7 @@ relay hop, the opposite of what a fair server is for.
    bash scripts/setup-vps.sh
    ```
 
-   It installs Docker, opens TCP 49175 and UDP 49176-49177 in `ufw`, and
+   It installs Docker, opens TCP 49175 and UDP 49176-49178 in `ufw`, and
    creates `.env` from `.env.example`. Open the same ports in the provider's
    own firewall too.
 

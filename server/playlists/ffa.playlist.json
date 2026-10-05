@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "name": "Hardcore FFA",
+  "vote_seconds": 60,
+  "games": [
+    { "map": "Maps/mlg_amplified_v8_012.mvar", "game": "Game Modes/h3_ffa_hardcoreSlayer_12min.bin", "name": "Amplified FFA" },
+    { "map": "Maps/mlg_ffa_heretic_012.mvar", "game": "Game Modes/h3_ffa_hardcoreSlayer_12min.bin", "name": "Heretic FFA" },
+    { "map": "Maps/mlg_ffa_guard_012.mvar", "game": "Game Modes/h3_ffa_hardcoreSlayer_12min.bin", "name": "Guardian FFA" }
+  ]
+}

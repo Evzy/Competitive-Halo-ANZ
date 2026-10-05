@@ -30,27 +30,33 @@ voice = true
 text_chat = true
 votes = true
 max_players = 16
-team_changing = "balanced"
-share_mods = true             # players without a mod download it from the server
+team_changing = "game_type"   # the playlists turn it on per game; Hardcore ships with it off
+share_mods = false            # players get mods from the Steam Workshop, not from us
 share_rate = 20               # Mbit/s, all of one server's downloads together
 
 # Every server needs its own UDP port, and GAME_PORTS in .env must cover it.
 
-# Named for where the machine is, numbered per lobby. Both lobbies play
-# Hardcore so two 4v4s can run at once. A machine in another city runs this
-# file with its own two names; see "A second city" in docs/hosting.md.
-# Both need scripts/copy-mcc-content.ps1 run on the host.
+# Named for where the machine is, numbered per lobby. The first two play
+# Hardcore so two 4v4s can run at once; the second also votes on the mod maps
+# in mods.json, and the third is free-for-all. Each says what it is in its
+# name. A machine in another city runs this file with its own names; see
+# "A second city" in docs/hosting.md. All need scripts/copy-mcc-content.ps1
+# run on the host.
 
 [[server]]
 name = "Halo Competitive ANZ | Melbourne 1"
 port = 49176
 playlist = "playlists/hardcore.playlist.json"
 max_players = 8
-team_changing = "off"         # MLG v8: Team Changing = Not Allowed
 
 [[server]]
-name = "Halo Competitive ANZ | Melbourne 2"
+name = "Halo Competitive ANZ | Melbourne 2 (Mods)"
 port = 49177
-playlist = "playlists/hardcore.playlist.json"
+playlist = "playlists/hardcore-mods.playlist.json"
 max_players = 8
-team_changing = "off"
+
+[[server]]
+name = "Halo Competitive ANZ | Melbourne 3 (FFA)"
+port = 49178
+playlist = "playlists/ffa.playlist.json"
+max_players = 8
