@@ -33,6 +33,10 @@ do not open MCC itself.
 Files are in [`server/playlists/`](server/playlists/). Before each game,
 players vote between three games drawn from the playlist, for 60 seconds.
 
+On Melbourne 1 and 2 the vote waits until eight players are in the lobby, so
+a 4v4 never starts short. The server says how many it is waiting for. Melbourne
+3 (FFA) starts with whoever is there.
+
 ### Hardcore
 
 MCC's Halo 3 Hardcore playlist, game for game. That playlist is MLG's final

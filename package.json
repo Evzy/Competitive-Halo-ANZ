@@ -4,7 +4,7 @@
   "description": "Config, playlists, game types and maps for Halo Competitive ANZ's Project Reclaimer servers",
   "scripts": {
     "validate": "node scripts/validate.js",
-    "test": "node scripts/test-validate.js"
+    "test": "node scripts/test-validate.js && node scripts/test-lobby-keeper.js"
   },
   "engines": {
     "node": ">=20"

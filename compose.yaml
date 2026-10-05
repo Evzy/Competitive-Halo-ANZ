@@ -47,5 +47,30 @@ services:
         max-size: 10m
         max-file: "3"
 
+  # Holds the 4v4 lobbies until eight are in, then opens the map vote. Talks to
+  # RCON over this compose network, so nothing extra is published. Off unless
+  # .env sets RECLAIMER_DEDICATED_RCON_PASSWORD and LOBBY_KEEPER_PORTS.
+  lobby-keeper:
+    image: node:22-alpine
+    restart: unless-stopped
+    init: true
+    command: ["node", "/app/lobby-keeper.js"]
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      RCON_HOST: reclaimer
+    volumes:
+      - ./scripts/lobby-keeper.js:/app/lobby-keeper.js:ro
+    depends_on:
+      - reclaimer
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: 1m
+        max-file: "3"
+
 volumes:
   cache:
