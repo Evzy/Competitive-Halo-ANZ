@@ -322,6 +322,19 @@ function checkConfig(cfg, { gamePorts }) {
   return errors;
 }
 
+// The start schedule (infra/logic-start.json) passes these to nightly.json.
+// A parameter renamed in one and not the other fails the deploy at 5:45pm,
+// with nobody watching.
+const NIGHTLY_PARAMS = ['sshPublicKey', 'subnetId', 'nsgId', 'identityId', 'identityClientId', 'storageAccount'];
+
+function checkInfra(templates) {
+  const nightly = templates['nightly.json'];
+  if (!nightly) return ['infra/nightly.json is missing'];
+  return NIGHTLY_PARAMS
+    .filter(p => !(nightly.parameters && nightly.parameters[p]))
+    .map(p => `infra/nightly.json: does not declare parameter ${p}`);
+}
+
 function findForbiddenFiles(dir, found = []) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     if (['.git', 'node_modules'].includes(entry.name)) continue;
@@ -424,6 +437,17 @@ function main() {
     errors.push(`${f}: map, engine and program files are never committed`);
   }
 
+  const infraDir = path.join(ROOT, 'infra');
+  const templates = {};
+  for (const f of fs.readdirSync(infraDir).filter(f => f.endsWith('.json'))) {
+    try {
+      templates[f] = JSON.parse(fs.readFileSync(path.join(infraDir, f), 'utf8'));
+    } catch (err) {
+      errors.push(`infra/${f}: ${err.message}`);
+    }
+  }
+  errors.push(...checkInfra(templates));
+
   for (const w of warnings) console.log(`note   ${w}`);
   for (const e of errors) console.log(`error  ${e}`);
   if (errors.length) {
@@ -435,4 +459,4 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { parseToml, checkPlaylist, checkMods, checkMccContent, checkConfig, parsePortRange };
+module.exports = { parseToml, checkPlaylist, checkMods, checkMccContent, checkConfig, checkInfra, parsePortRange };

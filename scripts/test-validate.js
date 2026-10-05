@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const assert = require('assert');
 const path = require('path');
-const { parseToml, checkPlaylist, checkMods, checkMccContent, checkConfig, parsePortRange } = require('./validate');
+const { parseToml, checkPlaylist, checkMods, checkMccContent, checkConfig, checkInfra, parsePortRange } = require('./validate');
 
 let passed = 0;
 function test(name, fn) {
@@ -153,6 +153,14 @@ test('ports: ranges parse and nonsense does not', () => {
   assert.deepStrictEqual(parsePortRange('49176'), [49176, 49176]);
   assert.strictEqual(parsePortRange('49177-49176'), null);
   assert.strictEqual(parsePortRange(''), null);
+});
+
+test('infra: nightly.json declares what the start schedule passes', () => {
+  const template = { parameters: { sshPublicKey: {}, subnetId: {}, nsgId: {}, identityId: {}, identityClientId: {} } };
+  assert.deepStrictEqual(checkInfra({ 'nightly.json': template }), ['infra/nightly.json: does not declare parameter storageAccount']);
+  template.parameters.storageAccount = {};
+  assert.deepStrictEqual(checkInfra({ 'nightly.json': template }), []);
+  assert.deepStrictEqual(checkInfra({}), ['infra/nightly.json is missing']);
 });
 
 console.log(`${passed} passed`);
