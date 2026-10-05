@@ -17,6 +17,7 @@
     { "map": "Sanctuary", "game": "Game Modes/h3_4v4_hardcoreSlayer_50kills.bin", "name": "Sanctuary Slayer", "options": { "rounds.team_changing": "Enabled" } },
     { "map": "Sanctuary", "game": "Game Modes/h3_4v4_hardcoreFlag_heretic_5points.bin", "name": "Sanctuary CTF", "options": { "rounds.team_changing": "Enabled" } },
     { "map": "Warlock", "game": "Game Modes/h3_4v4_hardcoreFlag_heretic_5points.bin", "name": "Warlock CTF", "options": { "rounds.team_changing": "Enabled" } },
-    { "map": "Warlock", "game": "Game Modes/h3_4v4_hardcoreBall_250points.bin", "name": "Warlock Oddball", "options": { "rounds.team_changing": "Enabled" } }
+    { "map": "Warlock", "game": "Game Modes/h3_4v4_hardcoreBall_250points.bin", "name": "Warlock Oddball", "options": { "rounds.team_changing": "Enabled" } },
+    { "map": "Lockout", "game": "Game Modes/h3_4v4_hardcoreBall_250points.bin", "name": "Lockout Oddball", "options": { "rounds.team_changing": "Enabled" } }
   ]
 }

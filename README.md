@@ -27,7 +27,7 @@ do not open MCC itself.
 | Playlist | File | Server | Status |
 |---|---|---|---|
 | Hardcore | `hardcore.playlist.json` | Melbourne 1 (UDP 49176) | Test nights only. |
-| Hardcore + Mods | `hardcore-mods.playlist.json` | Melbourne 2 (Mods) (UDP 49177) | Test nights only. Hardcore plus the mod maps below: Sanctuary Slayer and CTF, Warlock CTF and Oddball. |
+| Hardcore + Mods | `hardcore-mods.playlist.json` | Melbourne 2 (Mods) (UDP 49177) | Test nights only. Hardcore plus the mod maps below: Sanctuary Slayer and CTF, Warlock CTF and Oddball, Lockout Oddball. |
 | Hardcore FFA | `ffa.playlist.json` | Melbourne 3 (FFA) (UDP 49178) | Test nights only. |
 
 Files are in [`server/playlists/`](server/playlists/). Before each game,
@@ -86,8 +86,9 @@ in [`server/content/mcc-content.json`](server/content/mcc-content.json).
 |---|---|---|
 | [Sanctuary](https://steamcommunity.com/sharedfiles/filedetails/?id=2898920291) | Neckzilla | Melbourne 2 (Mods) |
 | [Warlock](https://steamcommunity.com/sharedfiles/filedetails/?id=2977651586) | Neckzilla | Melbourne 2 (Mods) |
+| [Lockout](https://steamcommunity.com/sharedfiles/filedetails/?id=2898979693) | Neckzilla | Melbourne 2 (Mods) |
 
-Subscribe to both before joining Melbourne 2. Suggest a mod by pull request; see
+Subscribe to all three before joining Melbourne 2. Suggest a mod by pull request; see
 [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Hosting
