@@ -196,6 +196,63 @@ a home connection joining this VPS.
 | Check files and config | `docker compose run --rm reclaimer dedicated check` |
 | Logs | `docker compose logs -f`, and `server/data/<server>/server.log` |
 
+## Azure, built nightly
+
+The live servers do not run on a machine that stays around. At 5:45pm
+Melbourne time a schedule builds a fresh VM from `main`; at midnight another
+deletes it. Nothing on the VM survives the night except what it saves to
+storage, so **whatever is on `main` at 5:45pm is what goes live**.
+
+Two resource groups in the `dev` subscription:
+
+| Group | Holds | Lifetime |
+|---|---|---|
+| `halo-competitive-anz` | VNet, `melbourne-nsg`, storage account `haloanzcontent`, identity `halo-nightly-vm`, Logic Apps `melbourne-start` and `melbourne-stop` | permanent |
+| `halo-competitive-anz-nightly` | the VM, its disk, NIC and public IP | 5:45pm to midnight, empty otherwise |
+
+`melbourne-start` deploys `infra/nightly.json`; cloud-init clones `main` and
+runs `scripts/nightly-boot.sh`, which pulls the game, MCC content and mods
+from the `content` container, restores the ban list, writes a fresh `.env`
+with a new RCON password and starts the stack. It takes about five minutes.
+`melbourne-stop` deploys the empty `infra/teardown.json` in Complete mode,
+which deletes everything in the nightly group.
+
+The public IP is different every night. Players never need it: the servers
+announce themselves to the master list. To reach tonight's VM yourself (SSH is
+open only from the address in `melbourne-nsg`'s `ssh-from-home` rule):
+
+```powershell
+az deployment group show -g halo-competitive-anz-nightly -n nightly --query properties.outputs.publicIp.value -o tsv
+ssh halo@<ip>
+```
+
+What is kept, in the `state` container:
+
+| Path | What | When |
+|---|---|---|
+| `boots/<date-HHMM>.log` | the boot script's log, success or failure | end of each boot |
+| `logs/<date>.tgz` | `server/data`, the servers' own logs | every 5 minutes |
+| `bans.json` | the ban list, restored at the next boot | every 5 minutes |
+
+A ban made in the last five minutes before midnight can be lost. A failed
+build sends no alert; the evidence is the boot log, or no servers on the list.
+
+**Adding a mod** is `sync-mods.ps1` as before, then
+`.\scripts\upload-content.ps1 -Part mods`. The same script uploads
+`mcc-content` after `copy-mcc-content.ps1`, and `game` after an MCC update.
+Tonight's build uses whatever was uploaded last.
+
+**Turning it off** is disabling both Logic Apps. With the nightly group empty
+the only cost left is storage, a few cents a month. When turning them back
+on, a recurrence whose `startTime` has already passed fires the moment it is
+enabled, so move `startTime` in `infra/logic-*.json` to a future date and
+re-apply first. Enabling `melbourne-stop` early is harmless; enabling
+`melbourne-start` early builds a server that runs until midnight.
+
+The old always-on VM `melbourne` (static IP `20.211.218.55`) is deallocated
+and kept as a fallback until the nightly build has run cleanly twice, then
+deleted with its disk, NIC, IP and shutdown schedule.
+
 ## When it breaks
 
 - **A Steam update to MCC stops the servers.** Each Reclaimer release supports
