@@ -11,6 +11,8 @@ const MIN_PLAYERS = Number(process.env.LOBBY_KEEPER_MIN_PLAYERS || 8);
 const POLL_MS = 2000;
 const RECONNECT_MS = 5000;
 const REPLY_TIMEOUT_MS = 5000;
+const LOGIN_TIMEOUT_MS = 10000;
+const MAX_MISSES = 3;
 // After a keeper restart it cannot know whether it cancelled the vote, so a
 // full lobby sitting with no vote, no next game and no game this long is
 // treated as one it was holding.
@@ -84,16 +86,28 @@ class Server {
     const ws = new WebSocket(`ws://${this.host}:${this.port}/`);
     this.ws = ws;
     this.ready = false;
-    ws.onopen = () => ws.send(JSON.stringify({ type: 'auth', password: this.password }));
-    ws.onmessage = ev => this.onMessage(JSON.parse(ev.data));
-    ws.onclose = () => {
-      if (this.ready) this.log('disconnected');
+    this.misses = 0;
+    let dropped = false;
+    // Retry on error, close or a login that never answers, whichever comes
+    // first. Node 22 fires only `error` for a refused connection and leaves the
+    // socket CONNECTING forever, so waiting for `close` (which a restarting
+    // server always produces) stopped the keeper for good after a restart.
+    this.drop = () => {
+      if (dropped) return;
+      dropped = true;
+      clearTimeout(loginTimer);
+      if (this.ready) this.log('disconnected, reconnecting');
       this.ready = false;
       for (const { reject } of this.pending.values()) reject(new Error('disconnected'));
       this.pending.clear();
+      try { ws.close(); } catch {}
       setTimeout(() => this.connect(), RECONNECT_MS);
     };
-    ws.onerror = () => {};
+    const loginTimer = setTimeout(() => { if (!this.ready) this.drop(); }, LOGIN_TIMEOUT_MS);
+    ws.onopen = () => ws.send(JSON.stringify({ type: 'auth', password: this.password }));
+    ws.onmessage = ev => { if (this.ws === ws) this.onMessage(JSON.parse(ev.data)); };
+    ws.onclose = () => { if (this.ws === ws) this.drop(); };
+    ws.onerror = () => { if (this.ws === ws) this.drop(); };
   }
 
   onMessage(msg) {
@@ -127,6 +141,7 @@ class Server {
     if (!this.ready) return;
     try {
       const { data } = await this.command('status');
+      this.misses = 0;
       const { actions, state } = decide(data, this.state, Date.now());
       this.state = state;
       for (const [command, ...args] of actions) {
@@ -135,6 +150,10 @@ class Server {
       }
     } catch (err) {
       this.log(err.message);
+      if (++this.misses >= MAX_MISSES) {
+        this.log(`${this.misses} commands failed in a row, reconnecting`);
+        this.drop();
+      }
     }
   }
 }
