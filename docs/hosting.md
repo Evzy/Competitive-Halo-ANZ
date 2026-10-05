@@ -249,9 +249,9 @@ enabled, so move `startTime` in `infra/logic-*.json` to a future date and
 re-apply first. Enabling `melbourne-stop` early is harmless; enabling
 `melbourne-start` early builds a server that runs until midnight.
 
-The old always-on VM `melbourne` (static IP `20.211.218.55`) is deallocated
-and kept as a fallback until the nightly build has run cleanly twice, then
-deleted with its disk, NIC, IP and shutdown schedule.
+The old always-on VM `melbourne` and its static IP `20.211.218.55` were
+deleted on 6 October 2026, after the first test night. There is no fallback
+machine: if a build fails, fix `main` and fire `melbourne-start` by hand.
 
 ## When it breaks
 
