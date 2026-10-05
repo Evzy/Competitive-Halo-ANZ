@@ -5,6 +5,11 @@ server/game/
 server/content/Mods/*
 !server/content/Mods/README.md
 
+# MCC's own variants, copied in by scripts/copy-mcc-content.ps1 from the
+# list in server/content/mcc-content.json.
+server/content/Game Modes/h3_*.bin
+server/content/Maps/mlg_*_012.mvar
+
 # Written by the running servers.
 server/data/
 server/bans.json

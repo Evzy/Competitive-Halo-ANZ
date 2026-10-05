@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "name": "Hardcore",
+  "vote_seconds": 20,
+  "games": [
+    { "map": "Maps/mlg_narrows_v8_012.mvar", "game": "Game Modes/h3_4v4_hardcoreSlayer_50kills.bin", "name": "Narrows Slayer" },
+    { "map": "Maps/mlg_narrows_v8_012.mvar", "game": "Game Modes/h3_4v4_hardcoreFlag_narrows_3points.bin", "name": "Narrows CTF" },
+    { "map": "Maps/mlg_heretic_v8_012.mvar", "game": "Game Modes/h3_4v4_hardcoreSlayer_50kills.bin", "name": "Heretic Slayer" },
+    { "map": "Maps/mlg_heretic_v8_012.mvar", "game": "Game Modes/h3_4v4_hardcoreFlag_heretic_5points.bin", "name": "Heretic CTF" },
+    { "map": "Maps/mlg_the_pit_v8_012.mvar", "game": "Game Modes/h3_4v4_hardcoreSlayer_50kills.bin", "name": "The Pit Slayer" },
+    { "map": "Maps/mlg_the_pit_v8_012.mvar", "game": "Game Modes/h3_4v4_hardcoreFlag_pit_3points.bin", "name": "The Pit CTF" },
+    { "map": "Maps/mlg_construct_ts8_012.mvar", "game": "Game Modes/h3_4v4_hardcoreSlayer_construct_50kills.bin", "name": "Construct Slayer" },
+    { "map": "Maps/mlg_construct_v8_012.mvar", "game": "Game Modes/h3_4v4_hardcoreKing_250points.bin", "name": "Construct King" },
+    { "map": "Maps/mlg_guardian_v8_012.mvar", "game": "Game Modes/h3_4v4_hardcoreBall_250points.bin", "name": "Guardian Oddball" },
+    { "map": "Maps/mlg_amplified_v8_012.mvar", "game": "Game Modes/h3_4v4_hardcoreSlayer_50kills.bin", "name": "Amplified Slayer" },
+    { "map": "Maps/mlg_onslaught_v8_012.mvar", "game": "Game Modes/h3_4v4_hardcoreFlag_heretic_5points.bin", "name": "Onslaught CTF" }
+  ]
+}

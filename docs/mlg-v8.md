@@ -4,6 +4,11 @@ Major League Gaming's final Halo 3 4v4 settings, released 15 March 2010 and
 used for the rest of Halo 3's MLG era. The 2019 Halo Classic tournaments
 played on these rules, with files downloaded from the official HCS gamertag.
 
+This is the historical reference. **The server does not use MLG's 2010 game
+variant files**: it plays MCC's Hardcore playlist, which is this rotation on
+MLG's own v8 map variants, from files every MCC install ships. See
+[hardcore.md](hardcore.md).
+
 ## Sources
 
 1. **MLG's own settings page, "Official MLG Halo 3 Settings v8"**, archived
@@ -25,12 +30,12 @@ played on these rules, with files downloaded from the official HCS gamertag.
 | # | Game | Game variant | Map variant |
 |---|---|---|---|
 | 1 | Amplified Slayer | `MLG TS 8` | `MLG Amplified 8` (Foundry) |
-| 2 | Construct Slayer | `MLG CStruct TS8` | `MLG Cons TS 8` |
+| 2 | Construct Slayer | `MLG CStruct TS8` | `MLG CStruct TS8` |
 | 3 | Heretic Slayer | `MLG TS 8` | `MLG Heretic 8` |
 | 4 | Narrows Slayer | `MLG TS 8` | `MLG Narrows 8` |
 | 5 | The Pit Slayer | `MLG TS 8` | `MLG Pit 8` |
-| 6 | Guardian Oddball | `MLG Ball 8` | MLG Guardian, version unconfirmed (below) |
-| 7 | Construct King | `MLG King 8` | `MLG Cons King 8` |
+| 6 | Guardian Oddball | `MLG Ball 8` | `MLG Guardian 8` |
+| 7 | Construct King | `MLG King 8` | `MLG Construct 8` |
 | 8 | Heretic 5 Flag | `MLG CTF 5Flag 8` | `MLG Heretic 8` |
 | 9 | Onslaught 5 Flag | `MLG CTF 5Flag 8` | `MLG Onslaught 8` (Foundry) |
 | 10 | Narrows 3 Flag | `MLG CTF Nar 8` | `MLG Narrows 8` |
@@ -47,7 +52,10 @@ Which flag variant goes on which map: v7 is stated as "Onslaught (5Flag),
 Heretic (5Flag), The Pit, Narrows", v8 changed no flag games, and the
 remaining two variants are named for their maps (`Nar`, `Pit`).
 
-Variant names are as they appear on MLG's file share. MLG's settings page
+Map variant names are as stored in the files MCC ships (by author "MLG
+Gametypes"); MLG's 20 May 2010 uploads named the two Construct variants
+`MLG Cons TS 8` and `MLG Cons King 8`. Game variant names are as they appear
+on MLG's file share. MLG's settings page
 spells two of them differently in its change list ("MLG The Pit 8",
 "MLG Cstruct TS 8"); the file share is what a player downloaded.
 
@@ -167,19 +175,13 @@ Halopedia and the 2019 Halo Classic rules, which is also CTF's default.
 
 MLG published a second set for online ladders: `GB CTF 5Flag 8`,
 `GB CTF Nar 8` and `GB CTF Pit 8`. Same as the MLG versions except a
-**15-minute** time limit and **30-second sudden death**. The MLG (tournament)
-versions are used here, with their 30-minute CTF, matching the 2019 Halo
-Classic. Swapping is a change to the three flag entries in
-`server/playlists/mlg-v8.playlist.json`.
+**15-minute** time limit and **30-second sudden death**.
 
 ## Not confirmed
 
-- **The Guardian map variant.** MLG's v8 page lists a change note for every
-  other map and none for Guardian, and no Guardian map variant appears among
-  the v8 files found on MLG's file share. The newest Guardian map variant from
-  MLG found is `MLG Guardian v6` (13 February 2009). The playlist expects
-  `content/Maps/MLG Guardian.mvar`; whoever adds it should say which version
-  it is.
+- **The Guardian map variant** was an open question until MCC's install
+  answered it: MCC ships `mlg_guardian_v8_012.mvar`, named "MLG Guardian 8",
+  by MLG Gametypes, and its Hardcore playlist plays Oddball on it.
 - **Map weapon and spawn layouts.** These live inside the map variants, so
   they come with the files. Halopedia lists respawn times (Battle Rifle 10s,
   Carbine 90s, Sniper 150s, Rocket Launcher 180s, and so on) that are not on
@@ -187,16 +189,5 @@ Classic. Swapping is a change to the three flag entries in
 - **The 15-minute matchmaking time limit** Halopedia mentions for CTF applies
   to Bungie's MLG playlist, not to MLG's tournament files.
 
-## Files
-
-| File | Goes in |
-|---|---|
-| `MLG TS 8.bin`, `MLG CStruct TS8.bin`, `MLG Ball 8.bin`, `MLG King 8.bin`, `MLG CTF 5Flag 8.bin`, `MLG CTF Nar 8.bin`, `MLG CTF Pit 8.bin` | `server/content/Game Modes/` |
-| `MLG Amplified 8.mvar`, `MLG Cons TS 8.mvar`, `MLG Cons King 8.mvar`, `MLG Heretic 8.mvar`, `MLG Narrows 8.mvar`, `MLG Pit 8.mvar`, `MLG Onslaught 8.mvar`, `MLG Guardian.mvar` | `server/content/Maps/` |
-
-The playlist names each file by path, so a file must have exactly the name in
-this table. The server stays off until every one is present; `npm run
-validate` enforces that.
-
 The variants are MLG's work and are credited to them here. They are not
-covered by this repo's MIT license.
+covered by this repo's MIT license, and none of them is in this repo.

@@ -11,17 +11,14 @@ They need Node 20 or newer and nothing else. GitHub runs the same two on every
 pull request. They check what can be checked without the game; a host's
 `dedicated check` is the final word.
 
-## An MLG v8 file
+## A variant MCC already ships
 
-The README's "MLG v8 files we still need" lists each one with the exact file
-name the playlist expects. They are MLG's original variants, so the file must
-be MLG's, not a remake:
-
-1. Put it in `server/content/Game Modes/` (game variants) or
-   `server/content/Maps/` (map variants), named exactly as the README lists.
-2. Check its settings against [docs/mlg-v8.md](docs/mlg-v8.md) before opening
-   the pull request, and say where the file came from.
-3. Tick its box in the README.
+MCC's install holds every matchmaking variant in `halo3\hopper_game_variants`
+and `halo3\hopper_map_variants`, and `Data\careerdb\findgamehopperdb-v4.xml`
+says which playlist plays what. To use one, add it to
+`server/content/mcc-content.json` and name it in a playlist by its path, the
+way `hardcore.playlist.json` does. **Never commit the file itself**: it is
+Microsoft's, and each host copies it with `scripts/copy-mcc-content.ps1`.
 
 ## A game type of our own
 

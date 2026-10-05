@@ -1,4 +1,4 @@
-# Competitive Halo ANZ
+# Halo Competitive ANZ
 
 Dedicated Halo 3 servers for the Australian and New Zealand competitive
 community, run on [Project Reclaimer](https://projectreclaimer.dev/). Hosted in
@@ -9,16 +9,15 @@ server config, the playlists, the game types and the maps. Change any of it by
 pull request.
 
 > **Status: early.** Project Reclaimer is an early development build, and play
-> between different networks has not been verified by its developers yet. The
-> starter rotation runs on base game types; the MLG v8 rotation is waiting on
-> its game and map variant files (below).
+> between different networks has not been verified by its developers yet. No
+> server is running yet.
 
 ## Playing
 
 1. Own Halo: The Master Chief Collection on Steam, with Halo 3 and its
    campaign installed.
 2. Download Project Reclaimer from <https://projectreclaimer.dev/download>.
-3. Open it, go to the Server Browser and look for **Competitive Halo ANZ**.
+3. Open it, go to the Server Browser and look for **Halo Competitive ANZ**.
 
 Project Reclaimer runs Halo 3 from your own install with its own menus; you
 do not open MCC itself.
@@ -27,66 +26,43 @@ do not open MCC itself.
 
 | Playlist | File | Server | Status |
 |---|---|---|---|
-| ANZ Starter Rotation | `starter.playlist.json` | UDP 49176 | Live. Base game types only, so it runs today. |
-| ANZ MLG v8 | `mlg-v8.playlist.json` | UDP 49177 | Off until the MLG v8 files below are added. |
+| Hardcore | `hardcore.playlist.json` | UDP 49177 | Ready. |
+| ANZ Starter Rotation | `starter.playlist.json` | UDP 49176 | Base game types, a fallback. |
 
 Files are in [`server/playlists/`](server/playlists/). Before each game,
 players vote between three games drawn from the playlist.
 
-### ANZ MLG v8
+### Hardcore
 
-Major League Gaming's final Halo 3 4v4 settings (v8, March 2010), all eleven
-games, taken from MLG's own settings page. Full settings and sources:
-[docs/mlg-v8.md](docs/mlg-v8.md).
+MCC's Halo 3 Hardcore playlist, game for game. That playlist is MLG's final
+4v4 rotation (v8, March 2010) on MLG's own v8 map variants, and every MCC
+install already ships its files, so the server plays the real thing rather
+than a remake. How that is known: [docs/hardcore.md](docs/hardcore.md). MLG's
+settings, transcribed: [docs/mlg-v8.md](docs/mlg-v8.md).
 
-| | Slayer | Multi Flag | King | Oddball |
+| | Slayer | CTF | King | Oddball |
 |---|---|---|---|---|
-| Amplified | MLG TS 8 | | | |
-| Construct | MLG CStruct TS8 | | MLG King 8 | |
-| Guardian | | | | MLG Ball 8 |
-| Heretic | MLG TS 8 | MLG CTF 5Flag 8 | | |
-| Narrows | MLG TS 8 | MLG CTF Nar 8 | | |
-| Onslaught | | MLG CTF 5Flag 8 | | |
-| The Pit | MLG TS 8 | MLG CTF Pit 8 | | |
+| Amplified | HARDCORE TS | | | |
+| Construct | HARDCORE CON TS | | HARDCORE KING | |
+| Guardian | | | | HARDCORE BALL |
+| Heretic | HARDCORE TS | HARDCORE CTF (5) | | |
+| Narrows | HARDCORE TS | HARDCORE CTF (3) | | |
+| Onslaught | | HARDCORE CTF (5) | | |
+| The Pit | HARDCORE TS | HARDCORE CTF (3) | | |
 
 Every game: Battle Rifle starts, 110% speed, 110% damage, 90% shield
 recharge, no motion tracker. Slayer to 50, Oddball and King to 250, flag to 5
 captures on Heretic and Onslaught and 3 on Narrows and The Pit.
 
+The files are Microsoft's and are not in this repo: whoever hosts copies them
+from their own MCC install with `scripts/copy-mcc-content.ps1`, from the list
+in [`server/content/mcc-content.json`](server/content/mcc-content.json).
+
 ### ANZ Starter Rotation
 
-The MLG maps' base versions on Halo 3's base game types: Slayer to 50 with
-Battle Rifle starts, and plain CTF, King of the Hill and Oddball. A stand-in
-until the MLG files land, not a recreation of them.
-
-## MLG v8 files we still need
-
-The MLG v8 server stays off until each of these is in the repo, named exactly
-as below. They are MLG's own variants from their "MLG Gametypes" file share.
-
-Game variants, in [`server/content/Game Modes/`](server/content/Game%20Modes/):
-
-- [ ] `MLG TS 8.bin`
-- [ ] `MLG CStruct TS8.bin`
-- [ ] `MLG Ball 8.bin`
-- [ ] `MLG King 8.bin`
-- [ ] `MLG CTF 5Flag 8.bin`
-- [ ] `MLG CTF Nar 8.bin`
-- [ ] `MLG CTF Pit 8.bin`
-
-Map variants, in [`server/content/Maps/`](server/content/Maps/):
-
-- [ ] `MLG Amplified 8.mvar`
-- [ ] `MLG Cons TS 8.mvar`
-- [ ] `MLG Cons King 8.mvar`
-- [ ] `MLG Heretic 8.mvar`
-- [ ] `MLG Narrows 8.mvar`
-- [ ] `MLG Pit 8.mvar`
-- [ ] `MLG Onslaught 8.mvar`
-- [ ] `MLG Guardian.mvar` (which version MLG used for v8 is unconfirmed; see
-  [docs/mlg-v8.md](docs/mlg-v8.md#not-confirmed))
-
-See [CONTRIBUTING.md](CONTRIBUTING.md) for how to add one.
+The same maps' default versions on Halo 3's base game types: Slayer to 50
+with Battle Rifle starts, and plain CTF, King of the Hill and Oddball. Not a
+recreation of Hardcore.
 
 ## Maps and mods
 
@@ -116,6 +92,6 @@ No game files, and nothing from Microsoft or Project Reclaimer. Every host
 copies what a server needs from their own MCC install, and the server program
 comes from Project Reclaimer's releases.
 
-Competitive Halo ANZ and Project Reclaimer are independent fan projects, not
+Halo Competitive ANZ and Project Reclaimer are independent fan projects, not
 affiliated with or endorsed by Microsoft, Xbox Game Studios, Halo Studios,
 343 Industries, Bungie or Major League Gaming.

@@ -154,15 +154,42 @@ function modMapNames(mods) {
 }
 
 /**
+ * The MCC files the host copies into server/content. They are never in a
+ * checkout, so a playlist naming one counts as resolved; a path that is
+ * neither here nor committed still is not.
+ */
+function checkMccContent(manifest) {
+  const errors = [];
+  const targets = new Set();
+  if (!manifest || !Array.isArray(manifest.files)) return { errors: ['mcc-content.json: needs a "files" array'], targets };
+  manifest.files.forEach((f, i) => {
+    const at = `mcc-content.json entry ${i + 1}`;
+    const from = String(f.from || '');
+    const to = String(f.to || '');
+    const kind = from.match(/^hopper_(game|map)_variants\/[^/\\]+\.(bin|mvar)$/);
+    if (!kind) { errors.push(`${at}: from must be a file in hopper_game_variants/ or hopper_map_variants/`); return; }
+    const folder = kind[1] === 'game' ? 'Game Modes' : 'Maps';
+    if (!new RegExp(`^${folder}/[^/\\\\]+\\.${kind[2]}$`).test(to)) {
+      errors.push(`${at}: a ${kind[1]} variant goes to ${folder}/ with the same extension`);
+      return;
+    }
+    if (targets.has(lower(to))) errors.push(`${at}: ${to} listed twice`);
+    targets.add(lower(to));
+  });
+  return { errors, targets };
+}
+
+/**
  * Checks one playlist. `strict` is true when an enabled server uses it: a map
  * or game type this repo cannot account for is then an error rather than a
  * note, because that server would refuse to start on the host.
  */
-function checkPlaylist(playlist, { file, strict, gameModes, modMaps, contentDir }) {
+function checkPlaylist(playlist, { file, strict, gameModes, modMaps, contentDir, mccTargets = new Set() }) {
   const errors = [];
   const warnings = [];
   const where = path.relative(ROOT, file);
   const unresolved = strict ? errors : warnings;
+  const provided = p => mccTargets.has(lower(p)) || fs.existsSync(path.join(contentDir, p));
 
   if (typeof playlist.name !== 'string' || !playlist.name.trim()) errors.push(`${where}: needs a name`);
   if (playlist.vote_seconds !== undefined
@@ -199,7 +226,7 @@ function checkPlaylist(playlist, { file, strict, gameModes, modMaps, contentDir 
     if (lower(map).startsWith('workshop:')) {
       errors.push(`${at}: "${map}" - name mod maps by map name; a workshop: reference fails in Docker, which has no Steam`);
     } else if (/^maps\//i.test(map)) {
-      if (!fs.existsSync(path.join(contentDir, map))) unresolved.push(`${at}: ${map} is not in server/content`);
+      if (!provided(map)) unresolved.push(`${at}: ${map} is neither in server/content nor in mcc-content.json`);
     } else if (!baseMaps.has(lower(map))) {
       if (modMaps.has(lower(map))) modMapsUsed.add(lower(map));
       else unresolved.push(`${at}: map "${map}" is neither a Halo 3 map nor in mods.json`);
@@ -207,7 +234,7 @@ function checkPlaylist(playlist, { file, strict, gameModes, modMaps, contentDir 
 
     const game = g.game;
     if (/^game modes\//i.test(game)) {
-      if (!fs.existsSync(path.join(contentDir, game))) unresolved.push(`${at}: ${game} is not in server/content`);
+      if (!provided(game)) unresolved.push(`${at}: ${game} is neither in server/content nor in mcc-content.json`);
     } else if (!baseModes.has(lower(game)) && !gameModes.includes(lower(game))) {
       unresolved.push(`${at}: game type "${game}" has no file in server/content/Game Modes`);
     }
@@ -308,6 +335,18 @@ function findForbiddenFiles(dir, found = []) {
   return found;
 }
 
+// What git tracks, which is what a pull request would publish. A copy sitting
+// in a host's working tree is fine; the same file committed is not.
+function trackedFiles(dir) {
+  try {
+    return require('child_process')
+      .execFileSync('git', ['ls-files', '--', dir], { cwd: ROOT, encoding: 'utf8' })
+      .split('\n').filter(Boolean);
+  } catch {
+    return [];
+  }
+}
+
 function main() {
   const errors = [];
   const warnings = [];
@@ -338,6 +377,20 @@ function main() {
   const gameModes = gameModeFiles(contentDir);
   const modMaps = modMapNames(mods.mods || []);
 
+  let mcc;
+  try {
+    mcc = checkMccContent(JSON.parse(read('server/content/mcc-content.json')));
+  } catch (err) {
+    console.error(`mcc-content.json: ${err.message}`);
+    process.exit(1);
+  }
+  errors.push(...mcc.errors);
+  const mccTargets = mcc.targets;
+  for (const f of trackedFiles('server/content')) {
+    const rel = f.replace(/^server\/content\//, '');
+    if (mccTargets.has(lower(rel))) errors.push(`${f}: an MCC file is committed; it comes from each host's install`);
+  }
+
   const enabledPlaylists = new Set(
     (cfg.server || []).filter(s => s.enabled !== false && s.playlist).map(s => path.resolve(SERVER, s.playlist)),
   );
@@ -358,7 +411,7 @@ function main() {
       errors.push(`${path.relative(ROOT, file)}: ${err.message}`);
       continue;
     }
-    const r = checkPlaylist(playlist, { file, strict: enabledPlaylists.has(file), gameModes, modMaps, contentDir });
+    const r = checkPlaylist(playlist, { file, strict: enabledPlaylists.has(file), gameModes, modMaps, contentDir, mccTargets });
     errors.push(...r.errors);
     warnings.push(...r.warnings);
     if (!readme.includes(f)) errors.push(`README.md does not list playlists/${f}`);
@@ -379,4 +432,4 @@ function main() {
 
 if (require.main === module) main();
 
-module.exports = { parseToml, checkPlaylist, checkMods, checkConfig, parsePortRange };
+module.exports = { parseToml, checkPlaylist, checkMods, checkMccContent, checkConfig, parsePortRange };

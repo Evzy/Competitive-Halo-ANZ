@@ -1,0 +1,20 @@
+{
+  "about": "Files every MCC install ships in its halo3 folder, which the playlists use. scripts/copy-mcc-content.ps1 copies them into server/content on the host. They are Microsoft's and never go in git.",
+  "files": [
+    { "from": "hopper_game_variants/h3_4v4_hardcoreSlayer_50kills.bin", "to": "Game Modes/h3_4v4_hardcoreSlayer_50kills.bin" },
+    { "from": "hopper_game_variants/h3_4v4_hardcoreSlayer_construct_50kills.bin", "to": "Game Modes/h3_4v4_hardcoreSlayer_construct_50kills.bin" },
+    { "from": "hopper_game_variants/h3_4v4_hardcoreFlag_narrows_3points.bin", "to": "Game Modes/h3_4v4_hardcoreFlag_narrows_3points.bin" },
+    { "from": "hopper_game_variants/h3_4v4_hardcoreFlag_heretic_5points.bin", "to": "Game Modes/h3_4v4_hardcoreFlag_heretic_5points.bin" },
+    { "from": "hopper_game_variants/h3_4v4_hardcoreFlag_pit_3points.bin", "to": "Game Modes/h3_4v4_hardcoreFlag_pit_3points.bin" },
+    { "from": "hopper_game_variants/h3_4v4_hardcoreKing_250points.bin", "to": "Game Modes/h3_4v4_hardcoreKing_250points.bin" },
+    { "from": "hopper_game_variants/h3_4v4_hardcoreBall_250points.bin", "to": "Game Modes/h3_4v4_hardcoreBall_250points.bin" },
+    { "from": "hopper_map_variants/mlg_narrows_v8_012.mvar", "to": "Maps/mlg_narrows_v8_012.mvar" },
+    { "from": "hopper_map_variants/mlg_heretic_v8_012.mvar", "to": "Maps/mlg_heretic_v8_012.mvar" },
+    { "from": "hopper_map_variants/mlg_the_pit_v8_012.mvar", "to": "Maps/mlg_the_pit_v8_012.mvar" },
+    { "from": "hopper_map_variants/mlg_construct_ts8_012.mvar", "to": "Maps/mlg_construct_ts8_012.mvar" },
+    { "from": "hopper_map_variants/mlg_construct_v8_012.mvar", "to": "Maps/mlg_construct_v8_012.mvar" },
+    { "from": "hopper_map_variants/mlg_guardian_v8_012.mvar", "to": "Maps/mlg_guardian_v8_012.mvar" },
+    { "from": "hopper_map_variants/mlg_amplified_v8_012.mvar", "to": "Maps/mlg_amplified_v8_012.mvar" },
+    { "from": "hopper_map_variants/mlg_onslaught_v8_012.mvar", "to": "Maps/mlg_onslaught_v8_012.mvar" }
+  ]
+}

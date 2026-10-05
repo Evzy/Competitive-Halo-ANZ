@@ -1,4 +1,4 @@
-# Competitive Halo ANZ - Project Reclaimer dedicated servers.
+# Halo Competitive ANZ - Project Reclaimer dedicated servers.
 #
 # Reference for every setting: https://projectreclaimer.dev/host.html
 #
@@ -11,7 +11,7 @@ content = "content"           # Maps, Game Modes and Mods every server shares
 public_address = ""           # empty: detected. Set the VPS's IP or DNS name if detection is wrong.
 upnp = false                  # off on a VPS
 auto_update = false           # Docker: set RECLAIMER_DEDICATED_AUTO_UPDATE in .env instead
-host_name = "Competitive Halo ANZ"
+host_name = "Halo Competitive ANZ"
 
 # Player IDs (64 hex characters, Settings -> Connectivity -> Your player ID in
 # the client) who may kick and ban on every server. Add to this list by PR.
@@ -42,11 +42,9 @@ port = 49176
 playlist = "playlists/starter.playlist.json"
 
 [[server]]
-name = "ANZ MLG v8"
+name = "ANZ Hardcore"
 port = 49177
-playlist = "playlists/mlg-v8.playlist.json"
+playlist = "playlists/hardcore.playlist.json"
 max_players = 8
 team_changing = "off"         # MLG v8: Team Changing = Not Allowed
-# Off until MLG's v8 game and map variants are in content/.
-# See "MLG v8 files we still need" in README.md.
-enabled = false
+# Needs scripts/copy-mcc-content.ps1 run on the host; see docs/hosting.md.

@@ -1,7 +1,7 @@
 {
   "name": "competitive-halo-anz",
   "private": true,
-  "description": "Config, playlists, game types and maps for Competitive Halo ANZ's Project Reclaimer servers",
+  "description": "Config, playlists, game types and maps for Halo Competitive ANZ's Project Reclaimer servers",
   "scripts": {
     "validate": "node scripts/validate.js",
     "test": "node scripts/test-validate.js"

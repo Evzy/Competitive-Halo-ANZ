@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const assert = require('assert');
 const path = require('path');
-const { parseToml, checkPlaylist, checkMods, checkConfig, parsePortRange } = require('./validate');
+const { parseToml, checkPlaylist, checkMods, checkMccContent, checkConfig, parsePortRange } = require('./validate');
 
 let passed = 0;
 function test(name, fn) {
@@ -90,6 +90,27 @@ test('playlist: a missing content file is an error only for an enabled server', 
   const off = checkPlaylist({ name: 'P', games }, opts({ strict: false }));
   assert.deepStrictEqual(off.errors, []);
   assert.strictEqual(off.warnings.length, 2);
+});
+
+test('playlist: a file listed in mcc-content.json counts as provided, and nothing else does', () => {
+  const games = [...three, game('Maps/mlg_pit_v8_012.mvar', 'Game Modes/h3_hardcore.bin')];
+  const mccTargets = new Set(['maps/mlg_pit_v8_012.mvar', 'game modes/h3_hardcore.bin']);
+  assert.deepStrictEqual(checkPlaylist({ name: 'P', games }, opts({ mccTargets })).errors, []);
+  const partial = checkPlaylist({ name: 'P', games }, opts({ mccTargets: new Set(['maps/mlg_pit_v8_012.mvar']) }));
+  assert.strictEqual(partial.errors.length, 1);
+  assert.match(partial.errors[0], /h3_hardcore\.bin/);
+});
+
+test('mcc-content: game variants go to Game Modes, map variants to Maps, once each', () => {
+  const ok = { from: 'hopper_game_variants/a.bin', to: 'Game Modes/a.bin' };
+  const map = { from: 'hopper_map_variants/b.mvar', to: 'Maps/b.mvar' };
+  const r = checkMccContent({ files: [ok, map] });
+  assert.deepStrictEqual(r.errors, []);
+  assert.deepStrictEqual([...r.targets], ['game modes/a.bin', 'maps/b.mvar']);
+  assert.strictEqual(checkMccContent({ files: [{ from: 'hopper_game_variants/a.bin', to: 'Maps/a.bin' }] }).errors.length, 1);
+  assert.strictEqual(checkMccContent({ files: [{ from: '../halo3.dll', to: 'Game Modes/x.bin' }] }).errors.length, 1);
+  assert.strictEqual(checkMccContent({ files: [ok, ok] }).errors.length, 1);
+  assert.strictEqual(checkMccContent({}).errors.length, 1);
 });
 
 test('playlist: a mod map resolves through mods.json', () => {

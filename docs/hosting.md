@@ -1,6 +1,6 @@
 # Hosting the servers
 
-How to run Competitive Halo ANZ's servers on an Australian VPS. Project
+How to run Halo Competitive ANZ's servers on an Australian VPS. Project
 Reclaimer's own guide is the reference for everything here:
 <https://projectreclaimer.dev/host.html>.
 
@@ -48,23 +48,37 @@ relay hop, the opposite of what a fair server is for.
    `project-reclaimer-<version>.exe` from
    <https://projectreclaimer.dev/download>, rename it `project-reclaimer.exe`,
    and copy the game files a server needs. `--maps` keeps it to the maps the
-   playlists use. Foundry is in the list because MLG Amplified and MLG
-   Onslaught are built on it:
+   playlists use. Foundry is in the list because Amplified and Onslaught are
+   built on it:
 
    ```powershell
    .\project-reclaimer.exe dedicated init C:\reclaimer-init --from --maps "Construct,Guardian,Heretic,Narrows,The Pit,Foundry"
    ```
 
-3. **Upload the game files** into the repo's `server/game` on the VPS:
+3. **Copy the Hardcore variants.** On the same PC, from a clone of this repo:
+
+   ```powershell
+   .\scripts\copy-mcc-content.ps1
+   ```
+
+   It copies the fifteen files listed in `server/content/mcc-content.json`
+   (MCC's Hardcore game variants and MLG's v8 map variants) from your MCC
+   install into `server\content`. Pass `-Mcc "<folder>"` if MCC is not in the
+   default Steam library. See [hardcore.md](hardcore.md).
+
+4. **Upload the game files and the variants** to the VPS:
 
    ```powershell
    scp -r C:\reclaimer-init\game\halo3 you@your-vps:Competitive-Halo-ANZ/server/game/
+   scp "server\content\Game Modes\h3_*.bin" "you@your-vps:'Competitive-Halo-ANZ/server/content/Game Modes/'"
+   scp server\content\Maps\mlg_*_012.mvar you@your-vps:Competitive-Halo-ANZ/server/content/Maps/
    ```
 
-   On the VPS, `ls server/game` should show `halo3`. These files never go in
-   git; `.gitignore` excludes them.
+   On the VPS, `ls server/game` should show `halo3`. None of these files go in
+   git; `.gitignore` excludes them, and `npm run validate` fails if one is
+   committed anyway.
 
-4. **Mods**, once `mods.json` lists any. On the Windows PC, from a clone of
+5. **Mods**, once `mods.json` lists any. On the Windows PC, from a clone of
    this repo:
 
    ```powershell
@@ -72,10 +86,10 @@ relay hop, the opposite of what a fair server is for.
    scp -r server\content\Mods you@your-vps:Competitive-Halo-ANZ/server/content/
    ```
 
-5. **Secrets**, in `.env` on the VPS: `RECLAIMER_DEDICATED_RCON_PASSWORD` if
+6. **Secrets**, in `.env` on the VPS: `RECLAIMER_DEDICATED_RCON_PASSWORD` if
    you want the remote console.
 
-6. **Start**:
+7. **Start**:
 
    ```bash
    docker compose up -d
