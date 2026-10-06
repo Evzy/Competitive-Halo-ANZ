@@ -63,7 +63,7 @@ Allow the ports through Windows Firewall, from a terminal opened as
 administrator:
 
 ```powershell
-New-NetFirewallRule -DisplayName "Reclaimer games" -Direction Inbound -Protocol UDP -LocalPort 49176-49178 -Action Allow
+New-NetFirewallRule -DisplayName "Reclaimer games" -Direction Inbound -Protocol UDP -LocalPort 49176-49179 -Action Allow
 New-NetFirewallRule -DisplayName "Reclaimer browser" -Direction Inbound -Protocol TCP -LocalPort 49175 -Action Allow
 ```
 
@@ -115,7 +115,7 @@ relay hop, the opposite of what a fair server is for.
    bash scripts/setup-vps.sh
    ```
 
-   It installs Docker, opens TCP 49175 and UDP 49176-49178 in `ufw`, and
+   It installs Docker, opens TCP 49175 and UDP 49176-49179 in `ufw`, and
    creates `.env` from `.env.example`. Open the same ports in the provider's
    own firewall too.
 
@@ -213,7 +213,7 @@ the night except what it saves to storage, so **whatever is on `main` at
 ### How a night runs
 
 1. **5:45pm.** The Logic App `melbourne-start` deploys `infra/nightly.json`
-   into the group `halo-competitive-anz-nightly`: a B2s VM, a 30 GB disk, a
+   into the group `halo-competitive-anz-nightly`: an F4s v2 VM (4 cores, 8 GB, not burstable), a 30 GB disk, a
    NIC on the permanent network and firewall, and a new public IP.
 2. **cloud-init** (inside that template) installs Docker and git, clones `main`
    and runs `scripts/nightly-boot.sh`, which:
@@ -342,7 +342,7 @@ $g = 'halo-competitive-anz'
 & $az network vnet create -g $g -n melbourneVNET --address-prefixes 10.0.0.0/16 --subnet-name melbourneSubnet --subnet-prefixes 10.0.0.0/24
 & $az network nsg create -g $g -n melbourne-nsg
 & $az network nsg rule create -g $g --nsg-name melbourne-nsg -n ssh-from-home --priority 100 --protocol Tcp --destination-port-ranges 22 --source-address-prefixes <your home IP>
-& $az network nsg rule create -g $g --nsg-name melbourne-nsg -n reclaimer-games --priority 110 --protocol Udp --destination-port-ranges 49176-49178
+& $az network nsg rule create -g $g --nsg-name melbourne-nsg -n reclaimer-games --priority 110 --protocol Udp --destination-port-ranges 49176-49179
 & $az network nsg rule create -g $g --nsg-name melbourne-nsg -n reclaimer-browser --priority 120 --protocol Tcp --destination-port-ranges 49175
 
 # Storage, and the identity the VM reads it as

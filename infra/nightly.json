@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "vmName": { "type": "string", "defaultValue": "melbourne" },
-    "vmSize": { "type": "string", "defaultValue": "Standard_B2s" },
+    "vmSize": { "type": "string", "defaultValue": "Standard_F4s_v2" },
     "adminUsername": { "type": "string", "defaultValue": "halo" },
     "sshPublicKey": { "type": "string" },
     "subnetId": { "type": "string" },

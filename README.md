@@ -28,14 +28,14 @@ do not open MCC itself.
 |---|---|---|---|
 | Hardcore | `hardcore.playlist.json` | Melbourne 1 (UDP 49176) | Test nights only. |
 | Hardcore + Mods | `hardcore-mods.playlist.json` | Melbourne 2 (Mods) (UDP 49177) | Test nights only. Hardcore plus the mod maps below: Sanctuary Slayer and CTF, Warlock CTF and Oddball, Lockout Oddball. |
-| Hardcore FFA | `ffa.playlist.json` | Melbourne 3 (FFA) (UDP 49178) | Test nights only. |
+| Hardcore FFA | `ffa.playlist.json` | Melbourne 3 (FFA) (UDP 49178) and Melbourne 4 (FFA) (UDP 49179) | Test nights only. |
 
 Files are in [`server/playlists/`](server/playlists/). Before each game,
 players vote between three games drawn from the playlist, for 60 seconds.
 
 On Melbourne 1 and 2 the vote waits until eight players are in the lobby, so
 a 4v4 never starts short. The server says how many it is waiting for. Melbourne
-3 (FFA) starts with whoever is there.
+3 and 4 (FFA) start with whoever is there.
 
 ### Hardcore
 
