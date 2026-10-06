@@ -302,10 +302,19 @@ Things to know:
 
 ### Turning it off and on
 
-**It is OFF now.** Both schedules were disabled on 6 October 2026 after a good
-test week-night (four servers on F4s v2, the second FFA added mid-evening). The
-nightly group is empty, so the only cost is storage, which is kept so the game
-files do not have to be uploaded again: a few cents a month.
+**It is OFF now, and costs nothing.** Both schedules were disabled on
+6 October 2026 after a good test night (four servers on F4s v2, the second FFA
+added mid-evening), and the storage account `haloanzcontent` was deleted with
+everything in it. What is left is free: the two groups, `melbourneVNET`,
+`melbourne-nsg`, the identity `halo-nightly-vm` and the two disabled Logic
+Apps. That night's logs were saved off Azure before the delete.
+
+**Coming back means recreating storage first:** the storage block of the
+commands in "From nothing" (account, the identity's role and yours, the two
+containers), then `upload-content.ps1` with `-Part game`, `-Part mcc-content`
+and `-Part mods` (the first is a 2.2 GB upload from the `dedicated init`
+folder). The account name has to be free again; if it is not, see the last
+paragraph of "From nothing". Then the steps below.
 
 ```powershell
 .\scripts\azure-nightly.ps1 off   # disable the 5:45pm build, tear down a running server, disable midnight

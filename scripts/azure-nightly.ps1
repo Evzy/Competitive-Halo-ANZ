@@ -47,9 +47,13 @@ switch ($Action) {
         else { "builds nightly until {0:ddd d MMM}; none after (cutoff in infra/logic-start.json)" -f (LastNight) }
         $left = Az resource list -g $nightly --query "[].name" -o tsv
         if ($left) { "nightly group: $($left -join ', ')" } else { 'nightly group: empty (no server running)' }
-        'latest boot logs:'
-        Az storage blob list --account-name haloanzcontent -c state --prefix boots/ --auth-mode login --query "[].name" -o tsv |
-            Sort-Object | Select-Object -Last 3 | ForEach-Object { "  $_" }
+        if (@(Az storage account list -g $group --query "[].name" -o tsv) -notcontains 'haloanzcontent') {
+            'storage account haloanzcontent not found (see "From nothing" in docs/hosting.md)'
+        } else {
+            'latest boot logs:'
+            Az storage blob list --account-name haloanzcontent -c state --prefix boots/ --auth-mode login --query "[].name" -o tsv |
+                Sort-Object | Select-Object -Last 3 | ForEach-Object { "  $_" }
+        }
     }
     'ip' {
         $ip = & $az deployment group show -g $nightly -n nightly --query properties.outputs.publicIp.value -o tsv 2>$null

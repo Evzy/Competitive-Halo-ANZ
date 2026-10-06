@@ -99,8 +99,9 @@ files copied from your own install.
 When they are on, the servers run from 5:45pm to midnight Melbourne time on a
 VM in Azure's Melbourne region that is built fresh from `main` each evening and
 deleted at midnight, so a change merged to `main` is live that night. **They
-are off for now**, after a successful test in October 2026, and come back with
-one command. How it works:
+are off for now**, after a successful test in October 2026, and cost nothing
+while off; bringing them back means re-uploading the game files and one
+command. How it works:
 [docs/hosting.md, "Azure, built nightly"](docs/hosting.md#azure-built-nightly).
 
 ## License
