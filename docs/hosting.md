@@ -63,7 +63,7 @@ Allow the ports through Windows Firewall, from a terminal opened as
 administrator:
 
 ```powershell
-New-NetFirewallRule -DisplayName "Reclaimer games" -Direction Inbound -Protocol UDP -LocalPort 49176-49179 -Action Allow
+New-NetFirewallRule -DisplayName "Reclaimer games" -Direction Inbound -Protocol UDP -LocalPort 49176-49178 -Action Allow
 New-NetFirewallRule -DisplayName "Reclaimer browser" -Direction Inbound -Protocol TCP -LocalPort 49175 -Action Allow
 ```
 
@@ -115,7 +115,7 @@ relay hop, the opposite of what a fair server is for.
    bash scripts/setup-vps.sh
    ```
 
-   It installs Docker, opens TCP 49175 and UDP 49176-49179 in `ufw`, and
+   It installs Docker, opens TCP 49175 and UDP 49176-49178 in `ufw`, and
    creates `.env` from `.env.example`. Open the same ports in the provider's
    own firewall too.
 
@@ -203,7 +203,8 @@ a home connection joining this VPS.
 
 ## Azure, built nightly
 
-This is how the live servers run. There is no machine that stays around: at
+This is how the live servers run when they are on (they are **off** for now;
+see Turning it off and on). There is no machine that stays around: at
 **5:45pm** Melbourne time Azure builds a brand-new VM from `main`, and at
 **midnight** it deletes it, disk and IP included. Nothing on the VM survives
 the night except what it saves to storage, so **whatever is on `main` at
@@ -213,7 +214,7 @@ the night except what it saves to storage, so **whatever is on `main` at
 ### How a night runs
 
 1. **5:45pm.** The Logic App `melbourne-start` deploys `infra/nightly.json`
-   into the group `halo-competitive-anz-nightly`: an F4s v2 VM (4 cores, 8 GB, not burstable), a 30 GB disk, a
+   into the group `halo-competitive-anz-nightly`: a B2s VM, a 30 GB disk, a
    NIC on the permanent network and firewall, and a new public IP.
 2. **cloud-init** (inside that template) installs Docker and git, clones `main`
    and runs `scripts/nightly-boot.sh`, which:
@@ -301,31 +302,36 @@ Things to know:
 
 ### Turning it off and on
 
-**The build has a last night.** `melbourne-start` only builds while the time
-is before the date in its `Until_the_last_night` condition in
-`infra/logic-start.json`; after it, the schedule still wakes at 5:45pm and
-does nothing. `melbourne-stop` keeps running, so a server already up is still
-deleted at midnight and nothing is left running. `status` prints the last
-night. It is set to the night of Thursday 8 October 2026 (the cutoff is
-`2026-10-08T13:00:00Z`, midnight Friday in Melbourne), to pause until players
-have come across.
+**It is OFF now.** Both schedules were disabled on 6 October 2026 after a good
+test week-night (four servers on F4s v2, the second FFA added mid-evening). The
+nightly group is empty, so the only cost is storage, which is kept so the game
+files do not have to be uploaded again: a few cents a month.
 
-To build again, change that date (later, or far in the future to run
-indefinitely), make sure the `startTime` in the same file is in the future,
-push, and run `.\scripts\azure-nightly.ps1 apply`. Nothing else changes.
+```powershell
+.\scripts\azure-nightly.ps1 off   # disable the 5:45pm build, tear down a running server, disable midnight
+.\scripts\azure-nightly.ps1 on    # enable both again; the next build is the next 5:45pm
+```
 
-Fully off is disabling both Logic Apps (portal, or
-`az resource update -g halo-competitive-anz -n melbourne-start --resource-type Microsoft.Logic/workflows --set properties.state=Disabled`,
-and the same for `melbourne-stop`). Tear down first if a server is up.
+`build` and `teardown` run the schedules, so they only work while it is on.
 
-**On needs care: a schedule whose `startTime` has passed fires the moment it
-is enabled or re-applied.** Enabling `melbourne-stop` early is harmless (it
-empties an empty group). Enabling `melbourne-start` early builds a server that
-runs until midnight. So before turning them back on, move `startTime` in both
-`infra/logic-*.json` to a future date (keep start before 17:45 and stop at a
-midnight), push, run `apply`, then enable `melbourne-stop` before
-`melbourne-start`. `apply` refuses to re-apply a live schedule whose
-`startTime` has passed, for the same reason.
+**Before `on`, two dates in `infra/logic-start.json` must be in the future**,
+and `on` refuses until they are:
+
+- **`startTime`.** A schedule whose `startTime` has passed fires the moment it
+  is enabled or re-applied, which would build a server on the spot. Set it to
+  a date before the first night you want (keep the time before 17:45).
+- **The last night**, the date in the `Until_the_last_night` condition.
+  `melbourne-start` builds only while the time is before it; after it, the
+  schedule wakes at 5:45pm and does nothing, while `melbourne-stop` still
+  deletes anything left up. Set it to the morning after the last night you
+  want, in UTC (midnight Melbourne is 13:00 UTC the day before in AEDT), or
+  far in the future to run indefinitely. `status` prints it.
+
+Then push, run `apply` (it copies the file to Azure and keeps the schedules
+off), and run `on`. `on` enables `melbourne-stop` first: if its own
+`startTime` has passed it fires once on enable, which empties an already-empty
+group and costs nothing. `apply` also refuses to re-apply a schedule that is
+on with a `startTime` in the past, for the same reason.
 
 ### From nothing
 
@@ -342,7 +348,7 @@ $g = 'halo-competitive-anz'
 & $az network vnet create -g $g -n melbourneVNET --address-prefixes 10.0.0.0/16 --subnet-name melbourneSubnet --subnet-prefixes 10.0.0.0/24
 & $az network nsg create -g $g -n melbourne-nsg
 & $az network nsg rule create -g $g --nsg-name melbourne-nsg -n ssh-from-home --priority 100 --protocol Tcp --destination-port-ranges 22 --source-address-prefixes <your home IP>
-& $az network nsg rule create -g $g --nsg-name melbourne-nsg -n reclaimer-games --priority 110 --protocol Udp --destination-port-ranges 49176-49179
+& $az network nsg rule create -g $g --nsg-name melbourne-nsg -n reclaimer-games --priority 110 --protocol Udp --destination-port-ranges 49176-49178
 & $az network nsg rule create -g $g --nsg-name melbourne-nsg -n reclaimer-browser --priority 120 --protocol Tcp --destination-port-ranges 49175
 
 # Storage, and the identity the VM reads it as
@@ -362,8 +368,8 @@ and `sync-mods.ps1`), set future `startTime`s, and run
 `.\scripts\azure-nightly.ps1 apply`. That creates both schedules disabled and
 grants them exactly what they need: Contributor on the nightly group for both;
 for `melbourne-start` also Managed Identity Operator on `halo-nightly-vm` and
-Network Contributor on the network and firewall, so its VM can use them. Test
-with `build`, then `teardown`, then enable the schedules as above.
+Network Contributor on the network and firewall, so its VM can use them. Then
+`on`, and test with `build` and `teardown` rather than waiting for 5:45pm.
 
 The storage account name must be globally unique. If `haloanzcontent` is
 taken, the name is also in `scripts/azure-nightly.ps1`,

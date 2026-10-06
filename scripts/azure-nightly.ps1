@@ -9,10 +9,12 @@ nightly", explains the moving parts.
 .\scripts\azure-nightly.ps1 ip
 .\scripts\azure-nightly.ps1 build      # build the server now, as 5:45pm would
 .\scripts\azure-nightly.ps1 teardown   # delete it now, as midnight would
+.\scripts\azure-nightly.ps1 off        # stop building; tears down a running server first
+.\scripts\azure-nightly.ps1 on         # start building again at 5:45pm
 .\scripts\azure-nightly.ps1 apply      # push infra/logic-*.json to Azure and grant their roles
 #>
 param(
-    [Parameter(Mandatory, Position = 0)][ValidateSet('status', 'ip', 'build', 'teardown', 'apply')][string]$Action,
+    [Parameter(Mandatory, Position = 0)][ValidateSet('status', 'ip', 'build', 'teardown', 'off', 'on', 'apply')][string]$Action,
     # The key the nightly VM trusts for SSH. Baked into melbourne-start by `apply`.
     [string]$SshKey = "$env:USERPROFILE\.ssh\id_ed25519.pub"
 )
@@ -29,15 +31,20 @@ $schedules = @{ build = @('melbourne-start', 'Evening'); teardown = @('melbourne
 function Az { $out = & $az @args; if ($LASTEXITCODE) { throw "az $($args[0..2] -join ' ') failed" }; $out }
 function WorkflowUrl($name) { "https://management.azure.com/subscriptions/$sub/resourceGroups/$group/providers/Microsoft.Logic/workflows/$name" }
 function WorkflowState($name) { & $az resource show -g $group -n $name --resource-type Microsoft.Logic/workflows --query properties.state -o tsv 2>$null }
+function MelbourneNow { [TimeZoneInfo]::ConvertTimeBySystemTimeZoneId((Get-Date), 'AUS Eastern Standard Time') }
+function StartFile { Get-Content "$repo\infra\logic-start.json" -Raw | ConvertFrom-Json }
+function LastNight {
+    $cutoff = (StartFile).definition.actions.Until_the_last_night.expression.and[0].less[1]
+    if ($cutoff -match "'([^']+)'") { [TimeZoneInfo]::ConvertTimeBySystemTimeZoneId(([datetime]$Matches[1]).ToUniversalTime(), 'AUS Eastern Standard Time').AddMinutes(-1) }
+}
+function Toggle($name, $verb) { Az rest --method post --url "$(WorkflowUrl $name)/$($verb)?api-version=2016-06-01" | Out-Null }
+function NightlyEmpty { -not (& $az resource list -g $nightly --query "[].name" -o tsv) }
 
 switch ($Action) {
     'status' {
         foreach ($n in 'melbourne-start', 'melbourne-stop') { "{0,-16} {1}" -f $n, (WorkflowState $n) }
-        $cutoff = (Get-Content "$repo\infra\logic-start.json" -Raw | ConvertFrom-Json).definition.actions.Until_the_last_night.expression.and[0].less[1]
-        if ($cutoff -match "'([^']+)'") {
-            $last = [TimeZoneInfo]::ConvertTimeBySystemTimeZoneId(([datetime]$Matches[1]).ToUniversalTime(), 'AUS Eastern Standard Time').AddMinutes(-1)
-            "builds nightly until {0:ddd d MMM}; none after (cutoff in infra/logic-start.json)" -f $last
-        }
+        if ((WorkflowState 'melbourne-start') -ne 'Enabled') { 'evening build is OFF (azure-nightly.ps1 on)' }
+        else { "builds nightly until {0:ddd d MMM}; none after (cutoff in infra/logic-start.json)" -f (LastNight) }
         $left = Az resource list -g $nightly --query "[].name" -o tsv
         if ($left) { "nightly group: $($left -join ', ')" } else { 'nightly group: empty (no server running)' }
         'latest boot logs:'
@@ -56,6 +63,32 @@ switch ($Action) {
         Az rest --method post --url "$(WorkflowUrl $name)/triggers/$trigger/run?api-version=2016-06-01" | Out-Null
         if ($Action -eq 'build') { 'Building. About five minutes; then `azure-nightly.ps1 ip` or `status`.' }
         else { 'Tearing down. A few minutes; `azure-nightly.ps1 status` says "empty" when done.' }
+    }
+    'off' {
+        Toggle 'melbourne-start' 'disable'
+        'evening build off'
+        if (-not (NightlyEmpty)) {
+            Az rest --method post --url "$(WorkflowUrl 'melbourne-stop')/triggers/Midnight/run?api-version=2016-06-01" | Out-Null
+            'tearing down tonight''s server...'
+            $deadline = (Get-Date).AddMinutes(10)
+            do { Start-Sleep 20 } until ((NightlyEmpty) -or (Get-Date) -gt $deadline)
+            if (-not (NightlyEmpty)) { throw 'Teardown did not finish in 10 minutes; midnight schedule left on so it retries. Run `off` again later.' }
+        }
+        Toggle 'melbourne-stop' 'disable'
+        'midnight teardown off. Nothing is running and nothing will start.'
+    }
+    'on' {
+        # A schedule whose startTime has passed fires the moment it is enabled.
+        $start = [datetime](StartFile).definition.triggers.Evening.recurrence.startTime
+        if ($start -lt (MelbourneNow)) { throw "startTime in infra/logic-start.json ($start) has passed. Move it to a future date, push, run ``apply``, then ``on``." }
+        $last = LastNight
+        if ($last -and $last -lt (MelbourneNow)) { throw "The last night in infra/logic-start.json ($('{0:ddd d MMM}' -f $last)) has passed, so it would never build. Move the cutoff, push, run ``apply``, then ``on``." }
+        $live = Az resource show -g $group -n melbourne-start --resource-type Microsoft.Logic/workflows --query properties.definition.triggers.Evening.recurrence.startTime -o tsv
+        if ([datetime]$live -ne $start) { throw "Azure still has startTime $live, not the file's $start. Run ``apply`` first." }
+        Toggle 'melbourne-stop' 'enable'
+        Start-Sleep 15
+        Toggle 'melbourne-start' 'enable'
+        'Both schedules on. Builds at 5:45pm until {0:ddd d MMM}.' -f $last
     }
     'apply' {
         $id = Az identity show -g $group -n halo-nightly-vm -o json | ConvertFrom-Json
