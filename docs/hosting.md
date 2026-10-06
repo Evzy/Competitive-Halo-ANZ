@@ -301,7 +301,20 @@ Things to know:
 
 ### Turning it off and on
 
-Off is disabling both Logic Apps (portal, or
+**The build has a last night.** `melbourne-start` only builds while the time
+is before the date in its `Until_the_last_night` condition in
+`infra/logic-start.json`; after it, the schedule still wakes at 5:45pm and
+does nothing. `melbourne-stop` keeps running, so a server already up is still
+deleted at midnight and nothing is left running. `status` prints the last
+night. It is set to the night of Thursday 8 October 2026 (the cutoff is
+`2026-10-08T13:00:00Z`, midnight Friday in Melbourne), to pause until players
+have come across.
+
+To build again, change that date (later, or far in the future to run
+indefinitely), make sure the `startTime` in the same file is in the future,
+push, and run `.\scripts\azure-nightly.ps1 apply`. Nothing else changes.
+
+Fully off is disabling both Logic Apps (portal, or
 `az resource update -g halo-competitive-anz -n melbourne-start --resource-type Microsoft.Logic/workflows --set properties.state=Disabled`,
 and the same for `melbourne-stop`). Tear down first if a server is up.
 

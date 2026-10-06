@@ -33,6 +33,11 @@ function WorkflowState($name) { & $az resource show -g $group -n $name --resourc
 switch ($Action) {
     'status' {
         foreach ($n in 'melbourne-start', 'melbourne-stop') { "{0,-16} {1}" -f $n, (WorkflowState $n) }
+        $cutoff = (Get-Content "$repo\infra\logic-start.json" -Raw | ConvertFrom-Json).definition.actions.Until_the_last_night.expression.and[0].less[1]
+        if ($cutoff -match "'([^']+)'") {
+            $last = [TimeZoneInfo]::ConvertTimeBySystemTimeZoneId(([datetime]$Matches[1]).ToUniversalTime(), 'AUS Eastern Standard Time').AddMinutes(-1)
+            "builds nightly until {0:ddd d MMM}; none after (cutoff in infra/logic-start.json)" -f $last
+        }
         $left = Az resource list -g $nightly --query "[].name" -o tsv
         if ($left) { "nightly group: $($left -join ', ')" } else { 'nightly group: empty (no server running)' }
         'latest boot logs:'
