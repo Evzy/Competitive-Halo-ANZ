@@ -7,6 +7,7 @@
     { "map": "Heretic", "game": "Game Modes/h3_2v2_team_hardcoreSlayer_25kills.bin", "name": "Heretic Doubles", "options": { "rounds.team_changing": "Enabled" } },
     { "map": "Narrows", "game": "Game Modes/h3_2v2_team_hardcoreSlayer_25kills.bin", "name": "Narrows Doubles", "options": { "rounds.team_changing": "Enabled" } },
     { "map": "The Pit", "game": "Game Modes/h3_2v2_team_hardcoreSlayer_25kills.bin", "name": "The Pit Doubles", "options": { "rounds.team_changing": "Enabled" } },
-    { "map": "Construct", "game": "Game Modes/h3_2v2_team_hardcoreSlayer_25kills.bin", "name": "Construct Doubles", "options": { "rounds.team_changing": "Enabled" } }
+    { "map": "Construct", "game": "Game Modes/h3_2v2_team_hardcoreSlayer_25kills.bin", "name": "Construct Doubles", "options": { "rounds.team_changing": "Enabled" } },
+    { "map": "Maps/mlg_amplified_v8_012.mvar", "game": "Game Modes/h3_2v2_team_hardcoreSlayer_25kills.bin", "name": "Amplified Doubles", "options": { "rounds.team_changing": "Enabled" } }
   ]
 }

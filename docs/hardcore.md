@@ -72,7 +72,7 @@ MLG's own settings are transcribed in [mlg-v8.md](mlg-v8.md).
 |---|---|
 | `h3_hardcore_*_09_2018`, `hardcore_*` | An older Hardcore set, named "Hardcore TS" etc. in title case. CTF is "3 captures to win" on every map and Ball is 100 points, so it is not MLG v8. Not in any current playlist. |
 | `h3_4v4_team_hardcoreBall_200points_15min`, `h3_4v4_team_hardcoreKing_200points_15min` | 200-point Ball and King. Not in the Hardcore playlist. |
-| `h3_2v2_team_hardcoreSlayer_25kills` (2V2 HARDCORE TS), `h3_ffa_hardcoreSlayer_12min` (HARDCORE FFA), `h3_1v1_team_hardcoreSlayer_15kills` | The Hardcore Doubles, FFA and 1v1 playlists. Candidates for later servers. |
+| `h3_2v2_team_hardcoreSlayer_25kills` (2V2 HARDCORE TS), `h3_ffa_hardcoreSlayer_12min` (HARDCORE FFA), `h3_1v1_team_hardcoreSlayer_15kills` | The Hardcore Doubles, FFA and 1v1 playlists. Doubles and FFA run on Melbourne 3 to 5; 1v1 is not used. |
 | `mlg_team_slayer_010` and the other `mlg_*_010` | MLG's game variants under their generic names ("MLG Team Slayer", "MLG Multi Flag"), version not stated in the file. |
 
 ## Keeping it current

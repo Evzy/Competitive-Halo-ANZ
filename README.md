@@ -29,7 +29,7 @@ do not open MCC itself.
 | Hardcore | `hardcore.playlist.json` | Melbourne 1 (UDP 49176) | Test nights only. |
 | Hardcore + Mods | `hardcore-mods.playlist.json` | Melbourne 2 (Mods) (UDP 49177) | Test nights only. Hardcore plus the mod maps below: Sanctuary Slayer and CTF, Warlock CTF and Oddball, Lockout Oddball. |
 | Hardcore FFA | `ffa.playlist.json` | Melbourne 3 (FFA) (UDP 49178) and Melbourne 4 (FFA) (UDP 49179) | Test nights only. |
-| Hardcore Doubles | `doubles.playlist.json` | Melbourne 5 (2v2) (UDP 49180) | Test nights only. Slayer only: MCC's Hardcore Doubles Slayer, first to 25, on Guardian, Heretic, Narrows, The Pit and Construct. No mods. |
+| Hardcore Doubles | `doubles.playlist.json` | Melbourne 5 (2v2) (UDP 49180) | Test nights only. Slayer only: MCC's Hardcore Doubles Slayer, first to 25, on Guardian, Heretic, Narrows, The Pit, Construct and Amplified (the MLG Foundry map). No mods. |
 
 Files are in [`server/playlists/`](server/playlists/). Before each game,
 players vote between three games drawn from the playlist, for 60 seconds.
