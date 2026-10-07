@@ -11,7 +11,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 GAME_PORTS="$(grep -E '^GAME_PORTS=' .env 2>/dev/null | cut -d= -f2 || true)"
-GAME_PORTS="${GAME_PORTS:-49176-49179}"
+GAME_PORTS="${GAME_PORTS:-49176-49180}"
 MASTER_PORT=49175
 
 echo "== Docker"

@@ -136,8 +136,8 @@ relay hop, the opposite of what a fair server is for.
    .\scripts\copy-mcc-content.ps1
    ```
 
-   It copies the fifteen files listed in `server/content/mcc-content.json`
-   (MCC's Hardcore game variants and MLG's v8 map variants) from your MCC
+   It copies the files listed in `server/content/mcc-content.json` (MCC's
+   Hardcore game variants and MLG's v8 map variants) from your MCC
    install into `server\content`. Pass `-Mcc "<folder>"` if MCC is not in the
    default Steam library. See [hardcore.md](hardcore.md).
 

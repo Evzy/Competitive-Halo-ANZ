@@ -8,6 +8,7 @@
     { "from": "hopper_game_variants/h3_4v4_hardcoreFlag_pit_3points.bin", "to": "Game Modes/h3_4v4_hardcoreFlag_pit_3points.bin" },
     { "from": "hopper_game_variants/h3_4v4_hardcoreKing_250points.bin", "to": "Game Modes/h3_4v4_hardcoreKing_250points.bin" },
     { "from": "hopper_game_variants/h3_4v4_hardcoreBall_250points.bin", "to": "Game Modes/h3_4v4_hardcoreBall_250points.bin" },
+    { "from": "hopper_game_variants/h3_2v2_team_hardcoreSlayer_25kills.bin", "to": "Game Modes/h3_2v2_team_hardcoreSlayer_25kills.bin" },
     { "from": "hopper_game_variants/h3_ffa_hardcoreSlayer_12min.bin", "to": "Game Modes/h3_ffa_hardcoreSlayer_12min.bin" },
     { "from": "hopper_map_variants/mlg_narrows_v8_012.mvar", "to": "Maps/mlg_narrows_v8_012.mvar" },
     { "from": "hopper_map_variants/mlg_heretic_v8_012.mvar", "to": "Maps/mlg_heretic_v8_012.mvar" },

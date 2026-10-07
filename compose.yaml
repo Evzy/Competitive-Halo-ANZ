@@ -30,12 +30,12 @@ services:
     # A published port must equal the port inside.
     ports:
       - "${RECLAIMER_DEDICATED_MASTER_PORT:-49175}:${RECLAIMER_DEDICATED_MASTER_PORT:-49175}/tcp"
-      - "${GAME_PORTS:-49176-49179}:${GAME_PORTS:-49176-49179}/udp"
+      - "${GAME_PORTS:-49176-49180}:${GAME_PORTS:-49176-49180}/udp"
       # Remote console, host loopback only. Reach it with
       # ssh -L 49176:127.0.0.1:49176 you@server. Needs
       # RECLAIMER_DEDICATED_RCON_ADDRESS=0.0.0.0 in .env so the container
       # listens beyond its own loopback.
-      # - "127.0.0.1:${GAME_PORTS:-49176-49179}:${GAME_PORTS:-49176-49179}/tcp"
+      # - "127.0.0.1:${GAME_PORTS:-49176-49180}:${GAME_PORTS:-49176-49180}/tcp"
     security_opt:
       - no-new-privileges:true
     # Roughly 0.25 core and 1-2 GB per server during a game.

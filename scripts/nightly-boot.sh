@@ -25,7 +25,7 @@ blob_get state bans.json > server/bans.json 2>/dev/null && echo "restored" || { 
 
 echo "== .env"
 cat > .env <<EOF
-GAME_PORTS=49176-49179
+GAME_PORTS=49176-49180
 RECLAIMER_DEDICATED_AUTO_UPDATE=true
 RECLAIMER_DEDICATED_RCON_PASSWORD=$(openssl rand -hex 24)
 RECLAIMER_DEDICATED_RCON_ADDRESS=0.0.0.0

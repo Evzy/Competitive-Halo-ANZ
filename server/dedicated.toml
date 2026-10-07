@@ -38,7 +38,8 @@ share_rate = 20               # Mbit/s, all of one server's downloads together
 
 # Named for where the machine is, numbered per lobby. The first two play
 # Hardcore so two 4v4s can run at once; the second also votes on the mod maps
-# in mods.json, and the third and fourth are free-for-all. Each says what it is in its
+# in mods.json, the third and fourth are free-for-all, and the fifth is 2v2
+# Slayer. Each says what it is in its
 # name. A machine in another city runs this file with its own names; see
 # "A second city" in docs/hosting.md. All need scripts/copy-mcc-content.ps1
 # run on the host.
@@ -66,3 +67,9 @@ name = "Halo Competitive ANZ | Melbourne 4 (FFA)"
 port = 49179
 playlist = "playlists/ffa.playlist.json"
 max_players = 8
+
+[[server]]
+name = "Halo Competitive ANZ | Melbourne 5 (2v2)"
+port = 49180
+playlist = "playlists/doubles.playlist.json"
+max_players = 4

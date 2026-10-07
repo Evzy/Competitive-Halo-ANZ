@@ -77,7 +77,7 @@ MLG's own settings are transcribed in [mlg-v8.md](mlg-v8.md).
 
 ## Keeping it current
 
-`server/content/mcc-content.json` lists the fifteen files and
+`server/content/mcc-content.json` lists the files and
 `scripts/copy-mcc-content.ps1` copies them from the host's install. If an MCC
 update renames one, the script says which, and the playlist and manifest
 change together. Re-check the XML above at the same time.
